@@ -1,4 +1,4 @@
-    /*
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
@@ -19,22 +19,20 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
-import Controller.nhanvienlogic;
 
 /**
  *
  * @author MYLAP.VN
  */
 public class QuanLyNhanVien extends javax.swing.JInternalFrame {
-    private ArrayList<NhanVien> ListNhanVien;
+
     DefaultTableModel model;
 
     public QuanLyNhanVien() throws SQLException {
-        initComponents();    
-        ListNhanVien = new DAO_NhanVien().getAllNhanVien();
+        initComponents();
         model = (DefaultTableModel) TableNhanVien.getModel();
-        showtable();
-
+        loadData();
+        
         TableNhanVien.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TableNhanVienMouseClicked(evt);
@@ -46,22 +44,6 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
 //                EntertextActionPerformed(evt);
 //            }
 //        });
-    }
-
-
-    public void showtable() {
-        model.setRowCount(0);
-        ListNhanVien = new DAO_NhanVien().getAllNhanVien();
-        for (NhanVien nv : ListNhanVien) {
-            model.addRow(new Object[]{
-                nv.getId(),
-                nv.getFullname(),
-                nv.getCccd(),
-                nv.getEmail(),
-                nv.getPassword(),
-                nv.getChucvu()
-            });
-        }
     }
 
     /**
@@ -85,19 +67,16 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
         txt_id = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         txt_tennv = new javax.swing.JTextField();
-        txt_pass = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        txt_chucvu = new javax.swing.JTextField();
         txt_cccd = new javax.swing.JTextField();
         txt_mail3 = new javax.swing.JTextField();
+        txt_chucvu = new javax.swing.JComboBox<>();
         frame_btnfunction = new javax.swing.JPanel();
         btnUpdate = new javax.swing.JButton();
         btnDel = new javax.swing.JButton();
         RefreshTour = new javax.swing.JButton();
-        btnAdd = new javax.swing.JButton();
 
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         setClosable(true);
@@ -166,7 +145,7 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "ID", "Tên ", "Cccd", "Email", "Mật Khẩu", "Chức Vụ"
+                "ID", "Tên ", "Cccd", "Email", "Chức Vụ"
             }
         ));
         TableNhanVien.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -190,32 +169,28 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
 
         txt_tennv.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        txt_pass.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel10.setText("Cccd");
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel11.setText("Email");
 
-        jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel12.setText("Mật Khẩu");
-
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel13.setText("Chức Vụ");
-
-        txt_chucvu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         txt_cccd.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         txt_mail3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        txt_chucvu.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        txt_chucvu.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nhân Viên", "Quản Lý" }));
 
         javax.swing.GroupLayout frame_inputLayout = new javax.swing.GroupLayout(frame_input);
         frame_input.setLayout(frame_inputLayout);
         frame_inputLayout.setHorizontalGroup(
             frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(frame_inputLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(108, Short.MAX_VALUE)
                 .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, frame_inputLayout.createSequentialGroup()
                         .addComponent(jLabel9)
@@ -236,15 +211,11 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
                         .addComponent(jLabel10)
                         .addGap(18, 18, 18)
                         .addComponent(txt_cccd, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel12)
-                    .addComponent(jLabel13))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel13)
                 .addGap(18, 18, 18)
-                .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txt_pass, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_chucvu, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(txt_chucvu, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         frame_inputLayout.setVerticalGroup(
             frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -252,8 +223,8 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
                 .addGap(15, 15, 15)
                 .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txt_pass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel12))
+                        .addComponent(jLabel13)
+                        .addComponent(txt_chucvu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel8)
                         .addComponent(txt_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -264,8 +235,6 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
                     .addComponent(jLabel9)
                     .addComponent(txt_tennv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11)
-                    .addComponent(jLabel13)
-                    .addComponent(txt_chucvu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txt_mail3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
@@ -306,31 +275,18 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
             }
         });
 
-        btnAdd.setBackground(new java.awt.Color(52, 103, 113));
-        btnAdd.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btnAdd.setForeground(new java.awt.Color(255, 255, 255));
-        btnAdd.setText("Thêm");
-        btnAdd.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout frame_btnfunctionLayout = new javax.swing.GroupLayout(frame_btnfunction);
         frame_btnfunction.setLayout(frame_btnfunctionLayout);
         frame_btnfunctionLayout.setHorizontalGroup(
             frame_btnfunctionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(frame_btnfunctionLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnAdd)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnUpdate)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
                 .addComponent(btnDel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
                 .addComponent(RefreshTour)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
         frame_btnfunctionLayout.setVerticalGroup(
             frame_btnfunctionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -339,8 +295,7 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
                 .addGroup(frame_btnfunctionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnUpdate)
                     .addComponent(btnDel)
-                    .addComponent(RefreshTour)
-                    .addComponent(btnAdd))
+                    .addComponent(RefreshTour))
                 .addContainerGap(12, Short.MAX_VALUE))
         );
 
@@ -348,10 +303,10 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(frame_nav, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
-            .addComponent(frame_input, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
-            .addComponent(frame_btnfunction, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
-            .addComponent(frame_tbdata, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(frame_nav, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)
+            .addComponent(frame_input, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)
+            .addComponent(frame_btnfunction, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)
+            .addComponent(frame_tbdata, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -368,35 +323,86 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    public void loadData() {
+        DefaultTableModel model = (DefaultTableModel) TableNhanVien.getModel();
+        model.setRowCount(0); // Xóa dữ liệu cũ
+
+        ArrayList<NhanVien> nhanVienList = NhanVien.selectAll();
+        for (NhanVien nv : nhanVienList) {
+            model.addRow(new Object[]{
+                nv.getId(),
+                nv.getFullname(),
+                nv.getCccd(),
+                nv.getEmail(),
+                nv.getChucvu()
+            });
+        }
+    }
+
+    public void clearInputFields() {
+        txt_id.setText("");
+        txt_tennv.setText("");
+        txt_mail3.setText("");
+        txt_chucvu.setSelectedIndex(0);
+        txt_cccd.setText("");
+    }
 
     private void EnterNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EnterNhanVienActionPerformed
-        nhanvienlogic logic = new nhanvienlogic(txt_cccd, txt_chucvu, txt_id, txt_mail3, txt_pass, txt_tennv, EnterNhanVien, TableNhanVien, model);
-        logic.performSearch();
+        performSearchNhanVien();
     }//GEN-LAST:event_EnterNhanVienActionPerformed
 
     private void btn_searchNVMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_searchNVMouseClicked
-        nhanvienlogic logic = new nhanvienlogic(txt_cccd, txt_chucvu, txt_id, txt_mail3, txt_pass, txt_tennv, EnterNhanVien, TableNhanVien, model);
-        logic.performSearch();
+        performSearchNhanVien();
     }//GEN-LAST:event_btn_searchNVMouseClicked
 
-    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        nhanvienlogic logic = new nhanvienlogic(txt_cccd, txt_chucvu, txt_id, txt_mail3, txt_pass, txt_tennv, EnterNhanVien, TableNhanVien, model);
-        logic.add_nv_logic();
-    }//GEN-LAST:event_btnAddActionPerformed
-
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        nhanvienlogic logic = new nhanvienlogic(txt_cccd, txt_chucvu, txt_id, txt_mail3, txt_pass, txt_tennv, EnterNhanVien, TableNhanVien, model);
-        logic.update_nv_logic();
+        int selectedRow = TableNhanVien.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn nhân viên cần cập nhật!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String id = txt_id.getText();
+        String fullname = txt_tennv.getText();
+        String cccd = txt_cccd.getText();
+        String email = txt_mail3.getText();
+        String chucvu = txt_chucvu.getSelectedItem().toString();
+
+        NhanVien nv = new NhanVien(id, fullname, cccd, email,"", chucvu);
+        int result = NhanVien.update(nv);
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Cập nhật nhân viên thành công!");
+            loadData();
+            clearInputFields();
+        } else {
+            JOptionPane.showMessageDialog(this, "Cập nhật nhân viên thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelActionPerformed
-        nhanvienlogic logic = new nhanvienlogic(txt_cccd, txt_chucvu, txt_id, txt_mail3, txt_pass, txt_tennv, EnterNhanVien, TableNhanVien, model);
-        logic.delete_nv_logic();
+        int selectedRow = TableNhanVien.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn nhân viên cần xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String id = TableNhanVien.getValueAt(selectedRow, 0).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhân viên này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            int result = NhanVien.delete(id);
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Xóa nhân viên thành công!");
+                loadData(); // Tải lại dữ liệu
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa nhân viên thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_btnDelActionPerformed
 
     private void RefreshTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshTourActionPerformed
-        nhanvienlogic logic = new nhanvienlogic(txt_cccd, txt_chucvu, txt_id, txt_mail3, txt_pass, txt_tennv, EnterNhanVien, TableNhanVien, model);
-        logic.refresh_nv();
+        clearInputFields();
+        loadData();
     }//GEN-LAST:event_RefreshTourActionPerformed
 
     private void TableNhanVienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableNhanVienMouseClicked
@@ -405,16 +411,33 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
         txt_tennv.setText(model.getValueAt(selectedRow, 1).toString());
         txt_cccd.setText(model.getValueAt(selectedRow, 2).toString());
         txt_mail3.setText(model.getValueAt(selectedRow, 3).toString());
-        txt_pass.setText(model.getValueAt(selectedRow, 4).toString());
-        txt_chucvu.setText(model.getValueAt(selectedRow, 5).toString());
+        txt_chucvu.setSelectedItem(model.getValueAt(selectedRow, 4).toString());
     }//GEN-LAST:event_TableNhanVienMouseClicked
 
+    private void performSearchNhanVien() {
+        String keyword = EnterNhanVien.getText().trim();
+
+        if (keyword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        ArrayList<NhanVien> results = NhanVien.selectLikeKey(keyword);
+        model.setRowCount(0); // Xóa dữ liệu cũ
+        for (NhanVien nv : results) {
+            model.addRow(new Object[]{
+                nv.getId(),
+                nv.getFullname(),
+                nv.getCccd(),
+                nv.getEmail(),
+                nv.getChucvu()
+            });
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField EnterNhanVien;
     private javax.swing.JButton RefreshTour;
     private javax.swing.JTable TableNhanVien;
-    private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDel;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JLabel btn_searchNV;
@@ -425,16 +448,14 @@ public class QuanLyNhanVien extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JTextField txt_cccd;
-    private javax.swing.JTextField txt_chucvu;
+    private javax.swing.JComboBox<String> txt_chucvu;
     private javax.swing.JTextField txt_id;
     private javax.swing.JTextField txt_mail3;
-    private javax.swing.JTextField txt_pass;
     private javax.swing.JTextField txt_tennv;
     // End of variables declaration//GEN-END:variables
 }

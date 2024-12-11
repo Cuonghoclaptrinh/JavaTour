@@ -4,7 +4,6 @@
  */
 package tour;
 
-import Control.DAO_Tour;
 import Object.Tour;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -18,7 +17,6 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
-import Controller.tourlogic;
 
 /**
  *
@@ -29,15 +27,12 @@ public class QuanLyTourP extends javax.swing.JInternalFrame {
     /**
      * Creates new form QuanLyTourP
      */
-    private ArrayList<Tour> ListTour;
     DefaultTableModel model;
 
     public QuanLyTourP() throws SQLException {
         initComponents();
-        ListTour = new DAO_Tour().getListTour();
         model = (DefaultTableModel) TableTour.getModel();
-//        model.setColumnIdentifiers(new Object[]{"ma tour", "ten tour", "gia", "ngaybd", "ngaykt"});
-        showtable();
+        loadData();
 
         TableTour.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -51,11 +46,14 @@ public class QuanLyTourP extends javax.swing.JInternalFrame {
             }
         });
     }
-     public void showtable() {
-        for (Tour t : ListTour) {
-            model.addRow(new Object[]{t.getMaTour(), t.getTenTour(), t.getGia(), t.getNgayBd(), t.getNgayKt()});
+    private void loadData() {
+        model.setRowCount(0);
+        ArrayList<Tour> tours = Tour.selectAll();
+        for (Tour tour : tours) {
+            model.addRow(new Object[]{tour.getMaTour(), tour.getTenTour(), tour.getGia(), tour.getNgayBd(), tour.getNgayKt()});
         }
     }
+    
   private void tableTourMouseClicked(java.awt.event.MouseEvent evt) {
     int selectedRow = TableTour.getSelectedRow(); // Lấy chỉ số dòng đã chọn
 
@@ -83,8 +81,7 @@ public class QuanLyTourP extends javax.swing.JInternalFrame {
             e.printStackTrace(); // Xử lý ngoại lệ nếu có
         }
     } else {
-        tourlogic logic = new tourlogic(Entertext, txtMaTour, txtTenTour, txtGia, txtNgayBD, txtNgayKT, model, TableTour);
-        logic.clearInputFields();
+        clearInputFields();
     }
 }
    /**
@@ -375,41 +372,182 @@ public class QuanLyTourP extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void EntertextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EntertextActionPerformed
-          tourlogic logic = new tourlogic(Entertext,txtMaTour, txtTenTour, txtGia, txtNgayBD, txtNgayKT, model, TableTour);
-          logic.performSearch();
+          performSearch();
     }//GEN-LAST:event_EntertextActionPerformed
 
+    private void performSearch() {
+        String keyword = Entertext.getText().trim(); // Lấy từ khóa tìm kiếm
+
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    ArrayList<Tour> result = Tour.selectLikeKey(keyword);
+    model.setRowCount(0); // Xóa toàn bộ dữ liệu cũ trong bảng
+    for (Tour t : result) {
+        model.addRow(new Object[]{
+            t.getMaTour(),
+            t.getTenTour(),
+            t.getGia(),
+            t.getNgayBd(),
+            t.getNgayKt()
+        });
+    }
+    }
     private void btnSearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSearchMouseClicked
-        tourlogic logic = new tourlogic(Entertext,txtMaTour, txtTenTour, txtGia, txtNgayBD, txtNgayKT, model, TableTour);
-        logic.performSearch();
+        performSearch();
     }//GEN-LAST:event_btnSearchMouseClicked
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        tourlogic logic = new tourlogic(Entertext, txtMaTour, txtTenTour, txtGia, txtNgayBD, txtNgayKT, model, TableTour);
-        logic.add_logic_tour();
+        if (txtMaTour.getText().isEmpty() || txtTenTour.getText().isEmpty() || txtGia.getText().isEmpty()
+            || txtNgayBD.getDate() == null || txtNgayKT.getDate() == null) {
+        JOptionPane.showMessageDialog(rootPane, "Vui lòng điền đầy đủ thông tin", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    Tour t = new Tour();
+    t.setMaTour(txtMaTour.getText());
+    t.setTenTour(txtTenTour.getText());
+
+    // Kiểm tra và thiết lập giá trị cho giá tour
+    try {
+        double gia = Double.parseDouble(txtGia.getText());
+        if (gia <= 0) {
+            JOptionPane.showMessageDialog(rootPane, "Giá tour phải lớn hơn 0", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        t.setGia(gia);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(rootPane, "Giá tour không hợp lệ. Vui lòng nhập số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Định dạng ngày
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+    try {
+        // Lấy và định dạng ngày bắt đầu
+        Date ngaybdDate = txtNgayBD.getDate();
+        String ngaybdStr = formatter.format(ngaybdDate);
+        LocalDate ngaybd = LocalDate.parse(ngaybdStr);
+        t.setNgayBd(ngaybd);
+
+        // Lấy và định dạng ngày kết thúc
+        Date ngayktDate = txtNgayKT.getDate();
+        String ngayktStr = formatter.format(ngayktDate);
+        LocalDate ngaykt = LocalDate.parse(ngayktStr);
+        t.setNgayKt(ngaykt);
+
+        // Kiểm tra xem ngày kết thúc có sau ngày bắt đầu không
+        if (ngaykt.isBefore(ngaybd)) {
+            JOptionPane.showMessageDialog(rootPane, "Ngày kết thúc phải sau ngày bắt đầu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(rootPane, "Định dạng ngày không hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+        AddTour(t);
+        clearInputFields();
+        loadData();
+
     }//GEN-LAST:event_btnAddActionPerformed
 
+    private void AddTour(Tour t){
+        Tour.insert(t);
+    }
+
+    private void clearInputFields() {
+    txtMaTour.setText("");
+    txtTenTour.setText("");
+    txtGia.setText("");
+    txtNgayBD.setDate(null);
+    txtNgayKT.setDate(null);
+    txtMaTour.requestFocus(); // Đưa con trỏ về trường mã tour
+    }
+    
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        tourlogic logic = new tourlogic(Entertext, txtMaTour, txtTenTour, txtGia, txtNgayBD, txtNgayKT, model, TableTour);
-        try {
-            logic.update_logic_tour();
-        } catch (SQLException ex) {
-            Logger.getLogger(QuanLyTourP.class.getName()).log(Level.SEVERE, null, ex);
+        int selectedRow = TableTour.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn một Tour để sửa.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Thu thập dữ liệu từ các trường nhập liệu
+    String maTour = txtMaTour.getText().trim();
+    String tenTour = txtTenTour.getText().trim();
+    String giaStr = txtGia.getText().trim();
+    
+    if (maTour.isEmpty() || tenTour.isEmpty() || giaStr.isEmpty() || txtNgayBD.getDate() == null || txtNgayKT.getDate() == null) {
+        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Định dạng ngày
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    // Xác thực và chuyển đổi giá từ String sang double
+    double gia;
+    try {
+        gia = Double.parseDouble(giaStr);
+        if (gia <= 0) {
+            JOptionPane.showMessageDialog(this, "Giá phải là số dương.", "Lỗi Giá", JOptionPane.ERROR_MESSAGE);
+            txtGia.requestFocus();
+            return;
         }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Giá phải là số.", "Lỗi Giá", JOptionPane.ERROR_MESSAGE);
+        txtGia.requestFocus();
+        return;
+    }
+
+    // Xử lý ngày bắt đầu và ngày kết thúc
+    LocalDate ngayBd = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(txtNgayBD.getDate()));
+    LocalDate ngayKt = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(txtNgayKT.getDate()));
+
+    if (ngayKt.isBefore(ngayBd)) {
+        JOptionPane.showMessageDialog(this, "Ngày kết thúc không thể trước ngày bắt đầu.", "Lỗi Ngày", JOptionPane.ERROR_MESSAGE);
+        txtNgayKT.requestFocus();
+        return;
+    }
+
+    // Tạo đối tượng Tour đã cập nhật
+    Tour updatedTour = new Tour();
+    updatedTour.setMaTour(maTour);
+    updatedTour.setTenTour(tenTour);
+    updatedTour.setGia(gia);
+    updatedTour.setNgayBd(ngayBd);
+    updatedTour.setNgayKt(ngayKt);
+
+    Tour.update(updatedTour);
+    JOptionPane.showMessageDialog(this, "Sửa Tour thành công.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+    loadData();
+    clearInputFields(); // Làm sạch các trường nhập liệu
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelActionPerformed
-        tourlogic logic = new tourlogic(Entertext, txtMaTour, txtTenTour, txtGia, txtNgayBD, txtNgayKT, model, TableTour);
-        try {
-            logic.delete_logic_tour();
-        } catch (SQLException ex) {
-            Logger.getLogger(QuanLyTourP.class.getName()).log(Level.SEVERE, null, ex);
+        int selectedRow = TableTour.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một Tour để xóa.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
         }
+
+        // Xác nhận lại với người dùng trước khi xóa
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa Tour này không?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return; // Nếu người dùng chọn "No", dừng thao tác xóa
+        }
+        
+        String maTour = model.getValueAt(selectedRow, 0).toString();
+        Tour.delete(maTour);
+        JOptionPane.showMessageDialog(this, "Xóa Tour thành công.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+        loadData();
+        clearInputFields();
     }//GEN-LAST:event_btnDelActionPerformed
 
     private void RefreshTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshTourActionPerformed
-       tourlogic logic = new tourlogic(Entertext, txtMaTour, txtTenTour, txtGia, txtNgayBD, txtNgayKT, model, TableTour);
-       logic.refresh_tour();
+       loadData();
+       clearInputFields();
     }//GEN-LAST:event_RefreshTourActionPerformed
 
 

@@ -32,10 +32,10 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="frame_nav" pref="693" max="32767" attributes="0"/>
+          <Component id="frame_nav" pref="712" max="32767" attributes="0"/>
           <Component id="frame_tbdata" alignment="0" max="32767" attributes="0"/>
-          <Component id="frame_btnfunction" alignment="0" pref="693" max="32767" attributes="0"/>
-          <Component id="frame_input" alignment="0" pref="693" max="32767" attributes="0"/>
+          <Component id="frame_btnfunction" alignment="0" pref="712" max="32767" attributes="0"/>
+          <Component id="frame_input" alignment="0" pref="712" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">

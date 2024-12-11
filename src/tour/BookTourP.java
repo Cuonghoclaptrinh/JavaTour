@@ -5,7 +5,7 @@
 package tour;
 
 import Control.DAO_BookTour;
-import Control.DAO_KhachHang;
+
 import Object.DatTour;
 import Object.KhachHang;
 import java.awt.event.KeyAdapter;
@@ -540,7 +540,7 @@ public class BookTourP extends javax.swing.JFrame {
     private void loadCustomerData(String MaKh) {
         try {
             // Gọi phương thức lấy thông tin khách hàng theo mã từ DAO
-            KhachHang customer = DAO_KhachHang.getCustomerByMaKh(MaKh);
+            KhachHang customer = KhachHang.selectByKey(MaKh);
 
             if (customer != null) {
                 // Nếu tìm thấy khách hàng, điền dữ liệu vào các trường

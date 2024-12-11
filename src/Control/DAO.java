@@ -23,7 +23,7 @@ public class DAO {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             
             // Các thông số kết nối
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=dulich_thi";
+            String url = "jdbc:sqlserver://DESKTOP-C2UG3F0:1433;databaseName=dulich_thi;encrypt=true;trustServerCertificate=true;";
             String username = "sa";
             String password = "123";
             

@@ -4,8 +4,6 @@
  */
 package tour;
 
-import Control.DAO_TourDTQ;
-import Control.DAO_TourHDV;
 import Object.TourDTQ;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import Controller.tour_dtqlogic;
 
 /**
  *
@@ -25,16 +22,11 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
      * Creates new form TourDTQ
      */
     
-    private ArrayList<TourDTQ> listTourDTQ;
     private DefaultTableModel model;
-    
     public Tour_DTQ() {
-        initComponents();
-        listTourDTQ = new DAO_TourDTQ().getAllTourDTQ();
+        initComponents();     
         model = (DefaultTableModel) tableTourDTQ.getModel();
-        
-        
-        // Tải dữ liệu ban đầu lên bảng
+
         loadData();
         
         // Sự kiện nhấp chuột để chọn hàng trong bảng
@@ -46,11 +38,15 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
     }
     
     private void loadData() {
-        model.setRowCount(0); // Xóa dữ liệu cũ
-        listTourDTQ =new DAO_TourDTQ().getAllTourDTQ();
-        for (TourDTQ tdq : listTourDTQ) {
-            model.addRow(new Object[]{tdq.getMaTour(), tdq.getMaDTQ()});
-        }
+    model.setRowCount(0); // Xóa dữ liệu cũ
+
+    ArrayList<TourDTQ> tourList = TourDTQ.selectAll();
+    for (TourDTQ tour : tourList) {
+        model.addRow(new Object[]{
+            tour.getMaTour(),
+            tour.getMaDiemThamQuan()
+        });
+    }
     }
 
     private void tableDTQMouseClicked(MouseEvent evt) {
@@ -302,35 +298,109 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtSearchDTQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchDTQActionPerformed
-        tour_dtqlogic logic = new tour_dtqlogic(tableTourDTQ, txtMaDTQ, txtMaTour, txtSearchDTQ, model);
-        logic.performsearch();
+        
     }//GEN-LAST:event_txtSearchDTQActionPerformed
 
     private void btnAddTourDTQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTourDTQActionPerformed
-        tour_dtqlogic logic = new tour_dtqlogic(tableTourDTQ, txtMaDTQ, txtMaTour, txtSearchDTQ, model);
-        logic.add_tourdtq_logic();
+         String maTour = txtMaTour.getText();
+    String maDiemThamQuan = txtMaDTQ.getText();
+
+    if (maTour.isEmpty() || maDiemThamQuan.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    TourDTQ tourDTQ = new TourDTQ(maTour, maDiemThamQuan);
+    int result = TourDTQ.insert(tourDTQ);
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Thêm mới thành công!");
+        loadData(); // Tải lại dữ liệu
+        clearInputFields(); // Xóa các trường nhập liệu
+    } else {
+        JOptionPane.showMessageDialog(this, "Thêm mới thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnAddTourDTQActionPerformed
 
     private void btnUpdateTourDTQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateTourDTQActionPerformed
-        tour_dtqlogic logic = new tour_dtqlogic(tableTourDTQ, txtMaDTQ, txtMaTour, txtSearchDTQ, model);
-        logic.update_tourdtq_logic();
+        int selectedRow = tableTourDTQ.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn một bản ghi để cập nhật!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    String old_maDTQ = tableTourDTQ.getValueAt(selectedRow, 1).toString();
+    
+    String maTour = txtMaTour.getText();
+    String maDiemThamQuan = txtMaDTQ.getText();
+   
+    TourDTQ tourDTQ = new TourDTQ(maTour, maDiemThamQuan);
+    int result = TourDTQ.update(maTour,old_maDTQ,maDiemThamQuan);
+        System.out.println(maDiemThamQuan);
+        System.out.println(maTour);
+        System.out.println(old_maDTQ);
+        System.out.println(result);
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+        loadData(); // Tải lại dữ liệu
+        clearInputFields(); // Xóa các trường nhập liệu
+    } else {
+        JOptionPane.showMessageDialog(this, "Cập nhật thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnUpdateTourDTQActionPerformed
 
     private void btnXoaTourDTQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaTourDTQActionPerformed
-        tour_dtqlogic logic = new tour_dtqlogic(tableTourDTQ, txtMaDTQ, txtMaTour, txtSearchDTQ, model);
-        logic.delete_tourdtq_logic();
+        int selectedRow = tableTourDTQ.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn một bản ghi để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    String maTour = tableTourDTQ.getValueAt(selectedRow, 0).toString();
+    String maDiemThamQuan = tableTourDTQ.getValueAt(selectedRow, 1).toString();
+
+    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa bản ghi này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        int result = TourDTQ.delete(maTour, maDiemThamQuan);
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Xóa thành công!");
+            loadData(); // Tải lại dữ liệu
+        } else {
+            JOptionPane.showMessageDialog(this, "Xóa thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     }//GEN-LAST:event_btnXoaTourDTQActionPerformed
 
+    public void clearInputFields() {
+    txtMaTour.setText("");
+    txtMaDTQ.setText("");
+}
+    
     private void RefreshDTQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDTQActionPerformed
-        tour_dtqlogic logic = new tour_dtqlogic(tableTourDTQ, txtMaDTQ, txtMaTour, txtSearchDTQ, model);
-        logic.refresh_tourdtq();
+        clearInputFields();
+        loadData();
     }//GEN-LAST:event_RefreshDTQActionPerformed
 
     private void btn_searchtourdtqMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_searchtourdtqMouseClicked
-        tour_dtqlogic logic = new tour_dtqlogic(tableTourDTQ, txtMaDTQ, txtMaTour, txtSearchDTQ, model);
-        logic.performsearch();
+        performSearch();
     }//GEN-LAST:event_btn_searchtourdtqMouseClicked
 
+    private void performSearch() {
+    String keyword = txtSearchDTQ.getText().trim();
+    
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    ArrayList<TourDTQ> results = TourDTQ.selectLikeKey(keyword);
+    model.setRowCount(0); // Xóa dữ liệu cũ
+    for (TourDTQ tour : results) {
+        model.addRow(new Object[]{
+            tour.getMaTour(),
+            tour.getMaDiemThamQuan()
+        });
+    }
+}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton RefreshDTQ;
     private javax.swing.JButton btnAddTourDTQ;

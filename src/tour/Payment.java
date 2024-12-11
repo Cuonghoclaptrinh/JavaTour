@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JInternalFrame;
 
 /**
  *
@@ -449,7 +450,7 @@ public class Payment extends javax.swing.JFrame {
 
                 JOptionPane.showMessageDialog(this, "Thanh toán thành công!");
                 this.dispose();
-
+                JInternalFrame newForm = new ListPayment();
             } else {
                 JOptionPane.showMessageDialog(this, "Thanh toán thất bại. Vui lòng thử lại.");
             }

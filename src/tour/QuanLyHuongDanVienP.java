@@ -4,7 +4,6 @@
  */
 package tour;
 
-import Control.DAO_HuongDanVien;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -14,7 +13,6 @@ import javax.swing.table.DefaultTableModel;
 import Object.HuongDanVien;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import Controller.hdvlogic;
 
 /**
  * /**
@@ -27,13 +25,10 @@ public class QuanLyHuongDanVienP extends javax.swing.JInternalFrame {
      * Creates new form QuanLyHuongDanVienP
      */
     private DefaultTableModel model;
-    private java.util.List<HuongDanVien> ListHdv;
-
     public QuanLyHuongDanVienP() {
         initComponents();
-        ListHdv = new DAO_HuongDanVien().getAllHuongDanVien();
+        
         model = (DefaultTableModel) TableHdv.getModel();
-//        model.setColumnIdentifiers(new Object[]{"Mã hướng dẫn viên", "Tên hướng dẫn viên", "SĐT", "Địa chỉ"});
         loadData();
 
         TableHdv.addMouseListener(new MouseAdapter() {
@@ -43,13 +38,22 @@ public class QuanLyHuongDanVienP extends javax.swing.JInternalFrame {
         });
     }
 
-    private void loadData() {
-        model.setRowCount(0);
-        ListHdv= new DAO_HuongDanVien().getAllHuongDanVien();
-        for (HuongDanVien hdv : ListHdv) {
-            model.addRow(new Object[]{hdv.getMaHdv(), hdv.getFullname(), hdv.getCccd(), hdv.getSdt(), hdv.getDiachi()});
-        }
+private void loadData() {
+    ArrayList<HuongDanVien> hdvList = HuongDanVien.selectAll();  // Lấy danh sách hướng dẫn viên từ CSDL
+    DefaultTableModel model = (DefaultTableModel) TableHdv.getModel();  // tblHdv là JTable
+    model.setRowCount(0);  // Xóa dữ liệu cũ trong bảng
+
+    for (HuongDanVien hdv : hdvList) {
+        model.addRow(new Object[]{
+            hdv.getMaHdv(),
+            hdv.getFullname(),
+            hdv.getCccd(),
+            hdv.getSdt(),
+            hdv.getDiachi()
+        });
     }
+}
+
 
     private void tableHdvMouseClicked(MouseEvent evt) {
         int selectedRow = TableHdv.getSelectedRow();
@@ -346,34 +350,129 @@ public class QuanLyHuongDanVienP extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshHdvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshHdvActionPerformed
-        hdvlogic logic = new hdvlogic(EnterSearchHdv, txtCccd, txtMaHdv, txtSdt, txtDiachi, txtTenHdv, TableHdv, model);
-        logic.refresh_hdv();
+
     }//GEN-LAST:event_RefreshHdvActionPerformed
 
     private void btnXoaHdvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaHdvActionPerformed
-        hdvlogic logic  = new hdvlogic(EnterSearchHdv, txtCccd, txtMaHdv, txtSdt, txtDiachi, txtTenHdv, TableHdv, model);
-        logic.delete_hdv_logic();
+        String maHdv = txtMaHdv.getText().trim();
+
+    if (maHdv.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập mã hướng dẫn viên để xóa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Xóa hướng dẫn viên khỏi CSDL
+    int result = HuongDanVien.delete(maHdv);
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Xóa hướng dẫn viên thành công!");
+        loadData();  // Cập nhật bảng
+        clearInputFields();
+    } else {
+        JOptionPane.showMessageDialog(this, "Có lỗi khi xóa hướng dẫn viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnXoaHdvActionPerformed
 
     private void btnUpdateHdvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateHdvActionPerformed
-       hdvlogic logic  = new hdvlogic(EnterSearchHdv, txtCccd, txtMaHdv, txtSdt, txtDiachi, txtTenHdv, TableHdv, model);
-       logic.update_hdv_logic();
+           int selectedRow = TableHdv.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng cần cập nhật!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+        
+        String maHdv = txtMaHdv.getText().trim();
+    String fullname = txtTenHdv.getText().trim();
+    String cccd = txtCccd.getText().trim();
+    String sdt = txtSdt.getText().trim();
+    String diachi = txtDiachi.getText().trim();
+
+    // Kiểm tra dữ liệu hợp lệ
+    if (maHdv.isEmpty() || fullname.isEmpty() || cccd.isEmpty() || sdt.isEmpty() || diachi.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Tạo đối tượng Hướng dẫn viên mới với thông tin cần cập nhật
+    HuongDanVien hdv = new HuongDanVien(maHdv, fullname, cccd, sdt, diachi);
+
+    // Cập nhật thông tin vào CSDL
+    int result = HuongDanVien.update(hdv);
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Cập nhật hướng dẫn viên thành công!");
+        loadData();  // Cập nhật bảng
+        clearInputFields();
+    } else {
+        JOptionPane.showMessageDialog(this, "Có lỗi khi cập nhật hướng dẫn viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnUpdateHdvActionPerformed
 
     private void btnAddHdvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddHdvActionPerformed
-        hdvlogic logic  = new hdvlogic(EnterSearchHdv, txtCccd, txtMaHdv, txtSdt, txtDiachi, txtTenHdv, TableHdv, model);
-        logic.add_hdv_logic();
+        String maHdv = txtMaHdv.getText().trim();
+    String fullname = txtTenHdv.getText().trim();
+    String cccd = txtCccd.getText().trim();
+    String sdt = txtSdt.getText().trim();
+    String diachi = txtDiachi.getText().trim();
+
+    // Kiểm tra dữ liệu hợp lệ
+    if (maHdv.isEmpty() || fullname.isEmpty() || cccd.isEmpty() || sdt.isEmpty() || diachi.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Tạo đối tượng Hướng dẫn viên mới
+    HuongDanVien hdv = new HuongDanVien(maHdv, fullname, cccd, sdt, diachi);
+
+    // Thêm vào CSDL
+    int result = HuongDanVien.insert(hdv);
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Thêm hướng dẫn viên thành công!");
+        loadData();  // Cập nhật bảng
+        clearInputFields();
+    } else {
+        JOptionPane.showMessageDialog(this, "Có lỗi khi thêm hướng dẫn viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnAddHdvActionPerformed
 
     private void EnterSearchHdvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EnterSearchHdvActionPerformed
-        hdvlogic logic  = new hdvlogic(EnterSearchHdv, txtCccd, txtMaHdv, txtSdt, txtDiachi, txtTenHdv, TableHdv, model);
-        logic.PerformSearchGuides();
+        searchHdv();
     }//GEN-LAST:event_EnterSearchHdvActionPerformed
 
     private void btn_searchHDVMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_searchHDVMouseClicked
-        hdvlogic logic  = new hdvlogic(EnterSearchHdv, txtCccd, txtMaHdv, txtSdt, txtDiachi, txtTenHdv, TableHdv, model);
-        logic.PerformSearchGuides();
+        searchHdv();
+        
     }//GEN-LAST:event_btn_searchHDVMouseClicked
+
+    private void searchHdv() {
+    String keyword = EnterSearchHdv.getText().trim();  // Lấy từ khóa tìm kiếm
+
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Tìm kiếm hướng dẫn viên theo từ khóa
+    ArrayList<HuongDanVien> hdvList = HuongDanVien.selectLikeKey(keyword);
+    DefaultTableModel model = (DefaultTableModel) TableHdv.getModel();
+    model.setRowCount(0);  // Xóa dữ liệu cũ trong bảng
+
+    for (HuongDanVien hdv : hdvList) {
+        model.addRow(new Object[]{
+            hdv.getMaHdv(),
+            hdv.getFullname(),
+            hdv.getCccd(),
+            hdv.getSdt(),
+            hdv.getDiachi()
+        });
+    }
+}
+    
+        public void clearInputFields() {
+        txtMaHdv.setText(""); // Xóa trường Mã hướng dẫn viên
+        txtTenHdv.setText(""); // Xóa trường Tên hướng dẫn viên
+        txtCccd.setText("");    // Xóa trường cccd
+        txtSdt.setText("");
+        txtDiachi.setText("");
+        txtMaHdv.requestFocus();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField EnterSearchHdv;

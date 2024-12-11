@@ -4,14 +4,12 @@
  */
 package tour;
 
-import Control.DAO_TourHDV;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import Object.TourHDV;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JOptionPane;
-import Controller.tour_hdvlogic;
 /**
  *
  * @author MYLAP.VN
@@ -21,13 +19,10 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
     /**
      * Creates new form Tour_HDV
      */
-    
-    private ArrayList<TourHDV> listTourHDV;
     private DefaultTableModel model;
     
     public Tour_HDV() {
         initComponents();      
-        listTourHDV = new DAO_TourHDV().getAllTourHDV();
         model = (DefaultTableModel) tableTourHDV.getModel();
         loadData();
         
@@ -40,11 +35,15 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
     
     
     private void loadData() {
-        model.setRowCount(0); 
-        listTourHDV = new DAO_TourHDV().getAllTourHDV();
-        for (TourHDV th : listTourHDV) {
-            model.addRow(new Object[]{th.getMaTour(), th.getMaHDV()});
-        }
+    model.setRowCount(0); // Xóa dữ liệu cũ
+
+    ArrayList<TourHDV> tourList = TourHDV.selectAll();
+    for (TourHDV t : tourList) {
+        model.addRow(new Object[]{
+            t.getMaTour(),
+            t.getMaHDV()
+        });
+    }
     }
 
     private void tableHdvMouseClicked(MouseEvent evt) {
@@ -174,13 +173,13 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
             frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(frame_inputLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtMaHDV, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtMaTour, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtMaHDV, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         frame_inputLayout.setVerticalGroup(
@@ -272,7 +271,7 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
             .addComponent(frame_nav, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
             .addComponent(frame_btnfunction, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
             .addComponent(frame_input, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
-            .addComponent(frame_tbdata, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(frame_tbdata, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -289,36 +288,117 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void clearInputFields() {
+    txtMaTour.setText("");
+    txtMaHDV.setText("");
+}
+    
     private void txtSearchHdvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchHdvActionPerformed
-       tour_hdvlogic logic = new tour_hdvlogic(tableTourHDV, txtMaHDV, txtMaTour, txtSearchHdv, model);
-       logic.performsearch();
+        performSearchTourHDV();
     }//GEN-LAST:event_txtSearchHdvActionPerformed
 
     private void btnAddHdvTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddHdvTourActionPerformed
-        tour_hdvlogic logic = new tour_hdvlogic(tableTourHDV, txtMaHDV, txtMaTour, txtSearchHdv, model);
-        logic.add_tourhdv_logic();
+        String maTour = txtMaTour.getText().trim();
+    String maHDV = txtMaHDV.getText().trim();
+
+    if (maTour.isEmpty() || maHDV.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Thực hiện thêm mới
+    TourHDV tourHDV = new TourHDV(maTour, maHDV);
+    int result = TourHDV.insert(tourHDV);
+
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Thêm thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        loadData();
+        clearInputFields();
+    } else {
+        JOptionPane.showMessageDialog(this, "Thêm thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnAddHdvTourActionPerformed
 
     private void btnUpdateHdvTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateHdvTourActionPerformed
-       tour_hdvlogic logic = new tour_hdvlogic(tableTourHDV, txtMaHDV, txtMaTour, txtSearchHdv, model);
-       logic.update_tourhdv_logic();
+            int selectedRow = tableTourHDV.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn một bản ghi để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+        
+        String maTour = txtMaTour.getText().trim();
+        String maHDV = txtMaHDV.getText().trim();
+        
+        String old_maHDV = tableTourHDV.getValueAt(selectedRow, 1).toString();
+
+
+
+    // Thực hiện cập nhật
+    int result = TourHDV.update(maTour, old_maHDV,maHDV);
+
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Cập nhật thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        loadData();
+        clearInputFields();
+    } else {
+        JOptionPane.showMessageDialog(this, "Cập nhật thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnUpdateHdvTourActionPerformed
 
     private void btnXoaHdvTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaHdvTourActionPerformed
-       tour_hdvlogic logic = new tour_hdvlogic(tableTourHDV, txtMaHDV, txtMaTour, txtSearchHdv, model);
-       logic.delete_tour_logic();
+        String maTour = txtMaTour.getText().trim();
+    String maHDV = txtMaHDV.getText().trim();
+
+    if (maTour.isEmpty() || maHDV.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Thực hiện xóa
+    int result = TourHDV.delete(maTour, maHDV);
+
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Xóa thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        loadData();
+        clearInputFields();
+    } else {
+        JOptionPane.showMessageDialog(this, "Xóa thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnXoaHdvTourActionPerformed
 
     private void RefreshHdvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshHdvActionPerformed
-       tour_hdvlogic logic = new tour_hdvlogic(tableTourHDV, txtMaHDV, txtMaTour, txtSearchHdv, model);
-       logic.refresh_tourhdv();
+        clearInputFields();
+        loadData();
     }//GEN-LAST:event_RefreshHdvActionPerformed
 
     private void btn_searchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_searchMouseClicked
-       tour_hdvlogic logic = new tour_hdvlogic(tableTourHDV, txtMaHDV, txtMaTour, txtSearchHdv, model);
-       logic.performsearch();
+        performSearchTourHDV();
     }//GEN-LAST:event_btn_searchMouseClicked
 
+    private void performSearchTourHDV() {
+    String keyword = txtSearchHdv.getText().trim();
+    
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    ArrayList<TourHDV> results = TourHDV.selectLikeKey(keyword);
+    model.setRowCount(0);
+    
+    for (TourHDV tourHDV : results) {
+        model.addRow(new Object[] {
+            tourHDV.getMaTour(),
+            tourHDV.getMaHDV()
+        });
+    }
+    
+    if (results.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+    }
+}
+
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton RefreshHdv;
     private javax.swing.JButton btnAddHdvTour;

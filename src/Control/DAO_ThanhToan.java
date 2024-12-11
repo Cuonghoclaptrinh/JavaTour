@@ -19,7 +19,7 @@ public class DAO_ThanhToan {
         String sql = "INSERT INTO ThanhToan(ma_thanh_toan, ma_dat_tour, ngay_thanh_toan, hinh_thuc, tong_tien) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DAO.getConnection().prepareStatement(sql)) {
             ps.setString(1, payment.getMaThanhToan());
-            ps.setString(2, payment.getDatTour()); 
+            ps.setString(2, payment.getMadatTour()); 
             ps.setDate(3, java.sql.Date.valueOf(payment.getNgayThanhToan()));
             ps.setString(4, payment.getHinhThuc());
             ps.setDouble(5, payment.getTongTien());

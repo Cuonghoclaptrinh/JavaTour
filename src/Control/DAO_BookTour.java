@@ -126,36 +126,36 @@ public class DAO_BookTour {
 public static DefaultTableModel getBookingHistory() {
     DefaultTableModel tableModel = new DefaultTableModel(
             new Object[]{"Mã Đặt Tour", "Tên Tour", "Khách Hàng", "Ngày Đặt", "Số Lượng", "Tổng Tiền", "Trạng Thái Thanh Toán"}, 0){
-    @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Tất cả các ô trong bảng đều không thể chỉnh sửa
-            }
-        };
-        String sql = "SELECT ma_dat_tour, ten_tour, ten_kh, ngay_dat, so_luong_nguoi, tong_tien, trang_thai " +
-                     "FROM DatTour " +
-                     "JOIN Tour ON DatTour.ma_tour = Tour.ma_tour " +
-                     "JOIN KhachHang ON DatTour.ma_kh = KhachHang.ma_kh";
-
-        try (Connection conn = DAO.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                String maDatTour = rs.getString("ma_dat_tour");
-                String tenTour = rs.getString("ten_tour");
-                String tenKhachHang = rs.getString("ten_kh");
-                Date ngayDat = rs.getDate("ngay_dat");
-                int soLuong = rs.getInt("so_luong_nguoi");
-                double tongTien = rs.getDouble("tong_tien");
-                String trangThaiThanhToan = rs.getString("trang_thai");
-
-                tableModel.addRow(new Object[]{maDatTour, tenTour, tenKhachHang, ngayDat, soLuong, tongTien, trangThaiThanhToan});
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+@Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // Tất cả các ô trong bảng đều không thể chỉnh sửa
         }
+    };
+    String sql = "SELECT ma_dat_tour, ten_tour, ten_kh, ngay_dat, so_luong_nguoi, tong_tien, trang_thai " +
+                 "FROM DatTour " +
+                 "JOIN Tour ON DatTour.ma_tour = Tour.ma_tour " +
+                 "JOIN KhachHang ON DatTour.ma_kh = KhachHang.ma_kh";
 
-        return tableModel;
+    try (Connection conn = DAO.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+
+        while (rs.next()) {
+            String maDatTour = rs.getString("ma_dat_tour");
+            String tenTour = rs.getString("ten_tour");
+            String tenKhachHang = rs.getString("ten_kh");
+            Date ngayDat = rs.getDate("ngay_dat");
+            int soLuong = rs.getInt("so_luong_nguoi");
+            double tongTien = rs.getDouble("tong_tien");
+            String trangThaiThanhToan = rs.getString("trang_thai");
+
+            tableModel.addRow(new Object[]{maDatTour, tenTour, tenKhachHang, ngayDat, soLuong, tongTien, trangThaiThanhToan});
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return tableModel;
 }
 
     

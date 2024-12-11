@@ -5,7 +5,7 @@
 package tour;
 
 import Control.DAO;
-import Control.DAO_KhachHang;
+import Control.DAO_Queries;
 import Object.KhachHang;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -15,7 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
-import Controller.khachhanglogic;
 
 /**
  *
@@ -26,14 +25,12 @@ public class QuanLyKhachHangP extends javax.swing.JInternalFrame {
     /**
      * Creates new form QuanLyKhachHangP
      */
-    private ArrayList<KhachHang> ListCustomer;
+ 
     DefaultTableModel model;
 
     public QuanLyKhachHangP() {
         initComponents();
-        ListCustomer = new DAO_KhachHang().getAllCustomers();
         model = (DefaultTableModel) TableKhachHang.getModel();
-//        model.setColumnIdentifiers(new Object[]{"Mã khách hàng", "Tên khách hàng", "SĐT", "Cccd", "Địa Chỉ"});
         loadData();
 
         TableKhachHang.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -55,17 +52,19 @@ public class QuanLyKhachHangP extends javax.swing.JInternalFrame {
 
     }
     public void loadData() {
-        model.setRowCount(0);
-        for (KhachHang customer : ListCustomer) {
-            model.addRow(new Object[]{
-                customer.getMaKh(),
-                customer.getTenKh(),
-                customer.getSdt(),
-                customer.getCccd(),
-                customer.getDiaChi()
-            });
-        }
-    }
+        DefaultTableModel model = (DefaultTableModel)TableKhachHang.getModel();
+    model.setRowCount(0); // Xóa dữ liệu cũ
+
+    ArrayList<KhachHang> khachHangList = KhachHang.selectAll();
+    for (KhachHang kh : khachHangList) {
+        model.addRow(new Object[]{
+            kh.getMaKh(), 
+            kh.getTenKh(), 
+            kh.getSdt(), 
+            kh.getCccd(), 
+            kh.getDiaChi()
+        });
+    }}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -352,41 +351,123 @@ public class QuanLyKhachHangP extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtEnterKhachHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEnterKhachHangActionPerformed
-        khachhanglogic logic = new khachhanglogic(txtEnterKhachHang, txtTenKh, txtSDT, txtMaKh, txtDiaChi, txtCCCD, TableKhachHang, model);
-        logic.performSearch();
+        performSearch();
     }//GEN-LAST:event_txtEnterKhachHangActionPerformed
 
     private void btnSearchKhachHangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSearchKhachHangMouseClicked
-        khachhanglogic logic = new khachhanglogic(txtEnterKhachHang, txtTenKh, txtSDT, txtMaKh, txtDiaChi, txtCCCD, TableKhachHang, model);
-        logic.performSearch();
+        performSearch();
     }//GEN-LAST:event_btnSearchKhachHangMouseClicked
 
+    private void performSearch() {
+    String keyword = txtEnterKhachHang.getText().trim();
+    
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    ArrayList<KhachHang> results = KhachHang.selectLikeKey(keyword);
+    model.setRowCount(0);
+    for (KhachHang kh : results) {
+        model.addRow(new Object[]{
+            kh.getMaKh(),
+            kh.getTenKh(),
+            kh.getSdt(),
+            kh.getCccd(),
+            kh.getDiaChi()
+        });
+    }
+
+}
+    
     private void txtTenKhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTenKhActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtTenKhActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        khachhanglogic logic = new khachhanglogic(txtEnterKhachHang, txtTenKh, txtSDT, txtMaKh, txtDiaChi, txtCCCD, TableKhachHang, model);
-        logic.add_kh_logic();
+        String maKh = txtMaKh.getText();
+    String tenKh = txtTenKh.getText();
+    String sdt = txtSDT.getText();
+    String cccd = txtCCCD.getText();
+    String diaChi = txtDiaChi.getText();
+
+    if (maKh.isEmpty() || tenKh.isEmpty() || sdt.isEmpty() || cccd.isEmpty() || diaChi.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    KhachHang kh = new KhachHang(maKh, tenKh, sdt, cccd, diaChi);
+    int result = KhachHang.insert(kh);
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");
+        loadData(); 
+        clearInputFields();
+    } else {
+        JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        khachhanglogic logic = new khachhanglogic(txtEnterKhachHang, txtTenKh, txtSDT, txtMaKh, txtDiaChi, txtCCCD, TableKhachHang, model);
-        logic.update_kh_logic();
+        int selectedRow = TableKhachHang.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng cần cập nhật!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    String maKh = txtMaKh.getText();
+    String tenKh = txtTenKh.getText();
+    String sdt = txtSDT.getText();
+    String cccd = txtCCCD.getText();
+    String diaChi = txtDiaChi.getText();
+
+    KhachHang kh = new KhachHang(maKh, tenKh, sdt, cccd, diaChi);
+    int result = KhachHang.update(kh);
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thành công!");
+        loadData();
+        clearInputFields();
+        
+    } else {
+        JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelActionPerformed
-        khachhanglogic logic = new khachhanglogic(txtEnterKhachHang, txtTenKh, txtSDT, txtMaKh, txtDiaChi, txtCCCD, TableKhachHang, model);
-        logic.delete_kh_logic();
+        int selectedRow = TableKhachHang.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng cần xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    String maKh = TableKhachHang.getValueAt(selectedRow, 0).toString();
+
+    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa khách hàng này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        int result = KhachHang.delete(maKh);
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Xóa khách hàng thành công!");
+            loadData(); // Tải lại dữ liệu
+        } else {
+            JOptionPane.showMessageDialog(this, "Xóa khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     }//GEN-LAST:event_btnDelActionPerformed
 
+        public void clearInputFields() {
+        txtMaKh.setText("");
+        txtTenKh.setText("");
+        txtDiaChi.setText("");
+        txtSDT.setText("");
+        txtCCCD.setText("");
+        txtMaKh.requestFocus();
+    }
+    
     private void RefreshKhMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RefreshKhMouseClicked
 
     }//GEN-LAST:event_RefreshKhMouseClicked
 
     private void RefreshKhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshKhActionPerformed
-        khachhanglogic logic = new khachhanglogic(txtEnterKhachHang, txtTenKh, txtSDT, txtMaKh, txtDiaChi, txtCCCD, TableKhachHang, model);
-        logic.refres_kh();
+        loadData();
+        clearInputFields();
     }//GEN-LAST:event_RefreshKhActionPerformed
 
 
@@ -414,4 +495,6 @@ public class QuanLyKhachHangP extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtSDT;
     private javax.swing.JTextField txtTenKh;
     // End of variables declaration//GEN-END:variables
+
+
 }

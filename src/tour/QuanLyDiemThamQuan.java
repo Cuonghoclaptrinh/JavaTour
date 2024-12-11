@@ -4,8 +4,7 @@
  */
 package tour;
 
-import Control.DAO_DiemThamQuan;
-import Controller.DTQlogic;
+
 import Object.DiemThamQuan;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -21,12 +20,12 @@ public class QuanLyDiemThamQuan extends javax.swing.JInternalFrame {
     /**
      * Creates new form DiemThamQuan
      */
-    private ArrayList<DiemThamQuan> ListAttraction;
+
     DefaultTableModel model;
 
     public QuanLyDiemThamQuan() {
         initComponents();
-        ListAttraction = new DAO_DiemThamQuan().getAllDiemThamQuan();
+
         model = (DefaultTableModel) TableDiemThamQuan.getModel();
         loadData();
 
@@ -49,13 +48,20 @@ public class QuanLyDiemThamQuan extends javax.swing.JInternalFrame {
         }
     }
 
-    private void loadData() {
-        model.setRowCount(0); 
-        ListAttraction = new DAO_DiemThamQuan().getAllDiemThamQuan();
-        for (DiemThamQuan dtq : ListAttraction) {
-            model.addRow(new Object[]{dtq.getMaDiemThamQuan(), dtq.getTenDiaDiem(), dtq.getDiaChi()});
-        }
+public void loadData() {
+    DefaultTableModel model = (DefaultTableModel) TableDiemThamQuan.getModel();
+    model.setRowCount(0); // Xóa dữ liệu cũ
+
+    ArrayList<DiemThamQuan> diemThamQuanList = DiemThamQuan.selectAll();
+    for (DiemThamQuan diem : diemThamQuanList) {
+        model.addRow(new Object[]{
+            diem.getMaDiemThamQuan(), 
+            diem.getTenDiaDiem(), 
+            diem.getDiaChi()
+        });
     }
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -319,35 +325,110 @@ public class QuanLyDiemThamQuan extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void EnterDtqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EnterDtqActionPerformed
-        DTQlogic logic = new DTQlogic(txtDiaChiDiemThamQuan, txtMaDiemThamQuan, txtTenDiemThamQuan, EnterDtq, TableDiemThamQuan, model);
-        logic.performSearchAttraction();
+        performSearch();
     }//GEN-LAST:event_EnterDtqActionPerformed
 
+    private void performSearch() {
+    String keyword = EnterDtq.getText().trim();
+    
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    ArrayList<DiemThamQuan> results = DiemThamQuan.selectLikeKey(keyword);
+    DefaultTableModel model = (DefaultTableModel) TableDiemThamQuan.getModel();
+    model.setRowCount(0); // Xóa dữ liệu cũ
+
+    for (DiemThamQuan diem : results) {
+        model.addRow(new Object[]{
+            diem.getMaDiemThamQuan(),
+            diem.getTenDiaDiem(),
+            diem.getDiaChi()
+        });
+    }
+}
+    
     private void btnAddDtqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddDtqActionPerformed
-       DTQlogic logic = new DTQlogic(txtDiaChiDiemThamQuan, txtMaDiemThamQuan, txtTenDiemThamQuan, EnterDtq, TableDiemThamQuan, model);
-       logic.add_dtq_logic();
+       String maDiem = txtMaDiemThamQuan.getText();
+    String tenDiem = txtTenDiemThamQuan.getText();
+    String diaChi = txtDiaChiDiemThamQuan.getText();
+
+    if (maDiem.isEmpty() || tenDiem.isEmpty() || diaChi.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    DiemThamQuan diem = new DiemThamQuan(maDiem, tenDiem, diaChi);
+    int result = DiemThamQuan.insert(diem);
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Thêm điểm tham quan thành công!");
+        loadData();
+        clearInputFields(); // Xóa các trường nhập liệu
+    } else {
+        JOptionPane.showMessageDialog(this, "Thêm điểm tham quan thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnAddDtqActionPerformed
 
     private void btnUpdateDtqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateDtqActionPerformed
-        DTQlogic logic = new DTQlogic(txtDiaChiDiemThamQuan, txtMaDiemThamQuan, txtTenDiemThamQuan, EnterDtq, TableDiemThamQuan, model);
-        logic.update_dtq_logic();
+        int selectedRow = TableDiemThamQuan.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn điểm tham quan cần cập nhật!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    String maDiem = txtMaDiemThamQuan.getText();
+    String tenDiem = txtTenDiemThamQuan.getText();
+    String diaChi = txtDiaChiDiemThamQuan.getText();
+
+    DiemThamQuan diem = new DiemThamQuan(maDiem, tenDiem, diaChi);
+    int result = DiemThamQuan.update(diem);
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Cập nhật điểm tham quan thành công!");
+        loadData();
+        clearInputFields(); // Xóa các trường nhập liệu
+    } else {
+        JOptionPane.showMessageDialog(this, "Cập nhật điểm tham quan thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnUpdateDtqActionPerformed
 
     private void btnXoaDtqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaDtqActionPerformed
-        DTQlogic logic = new DTQlogic(txtDiaChiDiemThamQuan, txtMaDiemThamQuan, txtTenDiemThamQuan, EnterDtq, TableDiemThamQuan, model);
-        logic.delete_dtq_logic();
+        int selectedRow = TableDiemThamQuan.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn điểm tham quan cần xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    String maDiem = TableDiemThamQuan.getValueAt(selectedRow, 0).toString();
+
+    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa điểm tham quan này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        int result = DiemThamQuan.delete(maDiem);
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Xóa điểm tham quan thành công!");
+            loadData(); // Tải lại dữ liệu
+        } else {
+            JOptionPane.showMessageDialog(this, "Xóa điểm tham quan thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     }//GEN-LAST:event_btnXoaDtqActionPerformed
 
     private void btnrefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnrefreshActionPerformed
-        DTQlogic logic = new DTQlogic(txtDiaChiDiemThamQuan, txtMaDiemThamQuan, txtTenDiemThamQuan, EnterDtq, TableDiemThamQuan, model);
-        logic.refreshDtqList();
+        clearInputFields();
+        loadData();
     }//GEN-LAST:event_btnrefreshActionPerformed
 
     private void btn_searchDTQMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_searchDTQMouseClicked
-        DTQlogic logic = new DTQlogic(txtDiaChiDiemThamQuan, txtMaDiemThamQuan, txtTenDiemThamQuan, EnterDtq, TableDiemThamQuan, model);
-        logic.performSearchAttraction();
+        performSearch();
     }//GEN-LAST:event_btn_searchDTQMouseClicked
 
+        public void clearInputFields() {
+        txtMaDiemThamQuan.setText("");
+        txtTenDiemThamQuan.setText("");
+        txtDiaChiDiemThamQuan.setText("");
+        txtMaDiemThamQuan.requestFocus();
+
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField EnterDtq;
     private javax.swing.JTable TableDiemThamQuan;

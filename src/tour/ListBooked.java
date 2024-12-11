@@ -5,7 +5,7 @@
 package tour;
 
 import Control.DAO_BookTour;
-import Control.DAO_ThanhToan;
+import Object.DatTour;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,69 +23,95 @@ public class ListBooked extends javax.swing.JInternalFrame {
     /**
      * Creates new form ListBooked
      */
-    
-    DefaultTableModel model; 
+    private DefaultTableModel model;
+
     public ListBooked() {
         initComponents();
-        model = DAO_BookTour.getBookingHistory();
-        TableListBooked.setModel(model);
-        
+        model = (DefaultTableModel) TableListBooked.getModel();
+        TableListBooked.setDefaultEditor(Object.class, null);
+        loadData();
+
         TableListBooked.addMouseListener(new java.awt.event.MouseAdapter() {
-    public void mouseClicked(java.awt.event.MouseEvent evt) {
-        // Kiểm tra nếu số lần nhấn chuột là 2 (double-click)
-        if (evt.getClickCount() == 2) {
-            System.out.println(".mouseClicked()");
-            int selectedRow = TableListBooked.getSelectedRow();
-            
-            // Kiểm tra trạng thái thanh toán
-            String trangThaiThanhToan = TableListBooked.getValueAt(selectedRow, 6).toString();
-            
-            if ("Chưa Thanh Toán".equals(trangThaiThanhToan)) {
-                String maDatTour = TableListBooked.getValueAt(selectedRow, 0).toString();
-                String tenTour = TableListBooked.getValueAt(selectedRow, 1).toString();
-                String tenKh= TableListBooked.getValueAt(selectedRow, 2).toString();
-                LocalDate ngayDat=LocalDate.parse(TableListBooked.getValueAt(selectedRow, 3).toString());
-                int soLuong = Integer.parseInt(TableListBooked.getValueAt(selectedRow, 4).toString());
-                double tongTien = Double.parseDouble(TableListBooked.getValueAt(selectedRow, 5).toString());
-                
-                // Lấy danh sách thông tin tour từ phương thức getTourInfoList
-                ArrayList<String> tourInfoList = DAO_BookTour.getTourInfoList(maDatTour);
-                
-                if (!tourInfoList.isEmpty()) {
-                    // Giả sử thông tin đầu tiên trong danh sách chứa dữ liệu của tour
-                    String info = tourInfoList.get(0); // Lấy thông tin tour từ danh sách
-                    
-                    // Tách các thông tin từ chuỗi info
-                    String[] infoParts = info.split(", ");
-                    String diaChi = infoParts[0].split(": ")[1]; // Lấy địa chỉ
-                    String cccd = infoParts[1].split(": ")[1]; // Lấy CCCD
-                    double gia = Double.parseDouble(infoParts[2].split(": ")[1]); // Lấy giá
-                    
-                    try {
-                        // Hiển thị form thanh toán với thông tin đã tách
-                        showPaymentForm(maDatTour, tenKh, diaChi, cccd, tenTour, soLuong, gia, tongTien, ngayDat);
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ListPayment.class.getName()).log(Level.SEVERE, null, ex);
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                // Kiểm tra nếu số lần nhấn chuột là 2 (double-click)
+                if (evt.getClickCount() == 2) {
+                    System.out.println(".mouseClicked()");
+                    int selectedRow = TableListBooked.getSelectedRow();
+
+                    // Kiểm tra trạng thái thanh toán
+                    String trangThaiThanhToan = TableListBooked.getValueAt(selectedRow, 6).toString();
+
+                    if ("Chưa Thanh Toán".equals(trangThaiThanhToan)) {
+                        String maDatTour = TableListBooked.getValueAt(selectedRow, 0).toString();
+                        String tenTour = TableListBooked.getValueAt(selectedRow, 1).toString();
+                        String tenKh = TableListBooked.getValueAt(selectedRow, 2).toString();
+                        LocalDate ngayDat = LocalDate.parse(TableListBooked.getValueAt(selectedRow, 3).toString());
+                        int soLuong = Integer.parseInt(TableListBooked.getValueAt(selectedRow, 4).toString());
+                        double tongTien = Double.parseDouble(TableListBooked.getValueAt(selectedRow, 5).toString());
+
+                        // Lấy danh sách thông tin tour từ phương thức getTourInfoList
+                        ArrayList<String> tourInfoList = DatTour.getTourInfoList(maDatTour);
+
+                        if (!tourInfoList.isEmpty()) {
+                            // Giả sử thông tin đầu tiên trong danh sách chứa dữ liệu của tour
+                            String info = tourInfoList.get(0); // Lấy thông tin tour từ danh sách
+
+                            // Tách các thông tin từ chuỗi info
+                            String[] infoParts = info.split(", ");
+                            String diaChi = infoParts[0].split(": ")[1]; // Lấy địa chỉ
+                            String cccd = infoParts[1].split(": ")[1]; // Lấy CCCD
+                            double gia = Double.parseDouble(infoParts[2].split(": ")[1]); // Lấy giá
+
+                            try {
+                                // Hiển thị form thanh toán với thông tin đã tách
+                                showPaymentForm(maDatTour, tenKh, diaChi, cccd, tenTour, soLuong, gia, tongTien, ngayDat);
+                            } catch (SQLException ex) {
+                                Logger.getLogger(ListPayment.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Không tìm thấy thông tin tour.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Đơn đặt tour đã tha"
+                                + ".nh toán.");
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Không tìm thấy thông tin tour.");
                 }
-            } else {
-                JOptionPane.showMessageDialog(null, "Đơn đặt tour đã tha"
-                        + ".nh toán.");
             }
-        }
-    }
-});
-        
+        });
 
     }
-    
-        private void showPaymentForm(String maDatTour, String tenKh, String diaChi, String cccd, String tenTour, 
-                   int soLuong, double gia, double tongTien, LocalDate ngayDat) throws SQLException {
-        Payment payment=new Payment(maDatTour, tenKh, diaChi, cccd, tenTour, soLuong, gia, tongTien, ngayDat);
-                payment.setVisible(true);
-}
+
+    private void showPaymentForm(String maDatTour, String tenKh, String diaChi, String cccd, String tenTour,
+            int soLuong, double gia, double tongTien, LocalDate ngayDat) throws SQLException {
+        Payment payment = new Payment(maDatTour, tenKh, diaChi, cccd, tenTour, soLuong, gia, tongTien, ngayDat);
+        
+         payment.addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+            loadData();
+        }
+    });
+        
+        payment.setVisible(true);
+        
+    }
+
+    private void loadData() {
+        model.setRowCount(0);
+        ArrayList<DatTour> datTourList = DatTour.selectAll();
+
+        for (DatTour datTour : datTourList) {
+            model.addRow(new Object[]{
+                datTour.getMaDatTour(),
+                datTour.getMaTour(),
+                datTour.getMaKhachHang(),
+                datTour.getNgayDat(),
+                datTour.getSoLuongNguoi(),
+                datTour.getTongTien(),
+                datTour.getTrangThai()
+            });
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -170,7 +196,7 @@ public class ListBooked extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "Mã tour", "Tên tour", "Giá", "Ngày bắt đầu", "Ngày kết thúc"
+                "Mã đặt tour", "Mã tour", "Mã kh", "Ngày đặt", "Số người", "Tổng tiền", "Trạng thái"
             }
         ));
         frame_tbdata.setViewportView(TableListBooked);
@@ -202,21 +228,27 @@ public class ListBooked extends javax.swing.JInternalFrame {
         searchBookings();
     }//GEN-LAST:event_btnSearchMouseClicked
 
-        public void searchBookings() {
-        // Lấy từ khóa tìm kiếm từ ô nhập
+    public void searchBookings() {
         String keyword = Entertext.getText().trim();
-
-        // Nếu từ khóa tìm kiếm không trống
-        if (!keyword.isEmpty()) {
-            // Tìm kiếm và hiển thị kết quả
-            DefaultTableModel searchModel = DAO_BookTour.searchBookings(keyword);
-            TableListBooked.setModel(searchModel); // Cập nhật lại bảng
-        } else {
-            // Nếu không có từ khóa, hiển thị tất cả danh sách
-            DefaultTableModel fullModel = DAO_BookTour.getBookingHistory();
-            TableListBooked.setModel(fullModel);  // Cập nhật lại bảng với dữ liệu đầy đủ
+        if (keyword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-}
+
+        ArrayList<DatTour> results = DatTour.selectLikeKey(keyword);
+        model.setRowCount(0);
+        for (DatTour datTour : results) {
+            model.addRow(new Object[]{
+                datTour.getMaDatTour(),
+                datTour.getMaTour(),
+                datTour.getMaKhachHang(),
+                datTour.getNgayDat(),
+                datTour.getSoLuongNguoi(),
+                datTour.getTongTien(),
+                datTour.getTrangThai()
+            });
+        }
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

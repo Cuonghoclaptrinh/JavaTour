@@ -4,12 +4,10 @@
  */
 package tour;
 
-
 import Object.DiemThamQuan;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-
 
 /**
  *
@@ -20,13 +18,13 @@ public class QuanLyDiemThamQuan extends javax.swing.JInternalFrame {
     /**
      * Creates new form DiemThamQuan
      */
-
     DefaultTableModel model;
 
     public QuanLyDiemThamQuan() {
         initComponents();
 
         model = (DefaultTableModel) TableDiemThamQuan.getModel();
+        TableDiemThamQuan.setDefaultEditor(Object.class, null);
         loadData();
 
         TableDiemThamQuan.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -37,10 +35,8 @@ public class QuanLyDiemThamQuan extends javax.swing.JInternalFrame {
     }
 
     private void tableDiemThamQuanMouseClicked(java.awt.event.MouseEvent evt) {
-        // Lấy chỉ số hàng được chọn trong bảng
         int selectedRow = TableDiemThamQuan.getSelectedRow();
-
-        // Kiểm tra chỉ số hàng được chọn có hợp lệ không
+        btnAddDtq.setEnabled(false);
         if (selectedRow != -1) {
             txtMaDiemThamQuan.setText(model.getValueAt(selectedRow, 0).toString());
             txtTenDiemThamQuan.setText(model.getValueAt(selectedRow, 1).toString());
@@ -48,20 +44,19 @@ public class QuanLyDiemThamQuan extends javax.swing.JInternalFrame {
         }
     }
 
-public void loadData() {
-    DefaultTableModel model = (DefaultTableModel) TableDiemThamQuan.getModel();
-    model.setRowCount(0); // Xóa dữ liệu cũ
+    public void loadData() {
+        DefaultTableModel model = (DefaultTableModel) TableDiemThamQuan.getModel();
+        model.setRowCount(0); // Xóa dữ liệu cũ
 
-    ArrayList<DiemThamQuan> diemThamQuanList = DiemThamQuan.selectAll();
-    for (DiemThamQuan diem : diemThamQuanList) {
-        model.addRow(new Object[]{
-            diem.getMaDiemThamQuan(), 
-            diem.getTenDiaDiem(), 
-            diem.getDiaChi()
-        });
+        ArrayList<DiemThamQuan> diemThamQuanList = DiemThamQuan.selectAll();
+        for (DiemThamQuan diem : diemThamQuanList) {
+            model.addRow(new Object[]{
+                diem.getMaDiemThamQuan(),
+                diem.getTenDiaDiem(),
+                diem.getDiaChi()
+            });
+        }
     }
-}
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -73,10 +68,11 @@ public void loadData() {
     private void initComponents() {
 
         frame_nav = new javax.swing.JPanel();
-        EnterDtq = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         btn_searchDTQ = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        EnterDtq = new javax.swing.JTextPane();
         frame_tbdata = new javax.swing.JScrollPane();
         TableDiemThamQuan = new javax.swing.JTable();
         frame_input = new javax.swing.JPanel();
@@ -101,14 +97,6 @@ public void loadData() {
         frame_nav.setBackground(new java.awt.Color(76, 148, 189));
         frame_nav.setPreferredSize(new java.awt.Dimension(700, 60));
 
-        EnterDtq.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        EnterDtq.setBorder(null);
-        EnterDtq.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EnterDtqActionPerformed(evt);
-            }
-        });
-
         btn_searchDTQ.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/Search_btn.png"))); // NOI18N
         btn_searchDTQ.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_searchDTQ.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -122,23 +110,25 @@ public void loadData() {
         jLabel2.setText("Điểm Tham Quan");
         jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
+        EnterDtq.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
+        jScrollPane1.setViewportView(EnterDtq);
+
         javax.swing.GroupLayout frame_navLayout = new javax.swing.GroupLayout(frame_nav);
         frame_nav.setLayout(frame_navLayout);
         frame_navLayout.setHorizontalGroup(
             frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(frame_navLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(EnterDtq, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(178, 178, 178)
+                .addComponent(jLabel7)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(frame_navLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(frame_navLayout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(frame_navLayout.createSequentialGroup()
-                        .addComponent(btn_searchDTQ)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 258, Short.MAX_VALUE)
-                        .addComponent(jLabel2)
-                        .addGap(54, 54, 54))))
+                .addComponent(btn_searchDTQ)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(54, 54, 54))
         );
         frame_navLayout.setVerticalGroup(
             frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -150,13 +140,14 @@ public void loadData() {
                         .addComponent(jLabel7)
                         .addGap(14, 14, 14)
                         .addGroup(frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(EnterDtq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_searchDTQ))))
+                            .addComponent(btn_searchDTQ)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(14, 14, 14))
         );
 
         frame_tbdata.setPreferredSize(new java.awt.Dimension(693, 281));
 
+        TableDiemThamQuan.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         TableDiemThamQuan.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
@@ -177,14 +168,14 @@ public void loadData() {
         jLabel8.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jLabel8.setText("Mã điểm tham quan :");
 
-        txtMaDiemThamQuan.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtMaDiemThamQuan.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
 
         jLabel9.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jLabel9.setText("Tên điểm tham quan :");
 
-        txtTenDiemThamQuan.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtTenDiemThamQuan.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
 
-        txtDiaChiDiemThamQuan.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtDiaChiDiemThamQuan.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
 
         jLabel11.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jLabel11.setText("Địa chỉ :");
@@ -230,7 +221,7 @@ public void loadData() {
         frame_btnfunction.setPreferredSize(new java.awt.Dimension(695, 50));
 
         btnAddDtq.setBackground(new java.awt.Color(52, 103, 113));
-        btnAddDtq.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnAddDtq.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         btnAddDtq.setForeground(new java.awt.Color(255, 255, 255));
         btnAddDtq.setText("Thêm");
         btnAddDtq.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -241,7 +232,7 @@ public void loadData() {
         });
 
         btnUpdateDtq.setBackground(new java.awt.Color(52, 103, 113));
-        btnUpdateDtq.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnUpdateDtq.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         btnUpdateDtq.setForeground(new java.awt.Color(255, 255, 255));
         btnUpdateDtq.setText("Câp nhật");
         btnUpdateDtq.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -252,7 +243,7 @@ public void loadData() {
         });
 
         btnXoaDtq.setBackground(new java.awt.Color(52, 103, 113));
-        btnXoaDtq.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnXoaDtq.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         btnXoaDtq.setForeground(new java.awt.Color(255, 255, 255));
         btnXoaDtq.setText("Xóa");
         btnXoaDtq.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -263,7 +254,7 @@ public void loadData() {
         });
 
         btnrefresh.setBackground(new java.awt.Color(52, 103, 113));
-        btnrefresh.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnrefresh.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         btnrefresh.setForeground(new java.awt.Color(255, 255, 255));
         btnrefresh.setText("làm mới");
         btnrefresh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -291,7 +282,7 @@ public void loadData() {
         frame_btnfunctionLayout.setVerticalGroup(
             frame_btnfunctionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, frame_btnfunctionLayout.createSequentialGroup()
-                .addContainerGap(19, Short.MAX_VALUE)
+                .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(frame_btnfunctionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnrefresh)
                     .addComponent(btnXoaDtq)
@@ -304,10 +295,10 @@ public void loadData() {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(frame_nav, javax.swing.GroupLayout.DEFAULT_SIZE, 704, Short.MAX_VALUE)
-            .addComponent(frame_btnfunction, javax.swing.GroupLayout.DEFAULT_SIZE, 704, Short.MAX_VALUE)
-            .addComponent(frame_input, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 704, Short.MAX_VALUE)
-            .addComponent(frame_tbdata, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(frame_nav, javax.swing.GroupLayout.DEFAULT_SIZE, 703, Short.MAX_VALUE)
+            .addComponent(frame_btnfunction, javax.swing.GroupLayout.DEFAULT_SIZE, 703, Short.MAX_VALUE)
+            .addComponent(frame_input, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 703, Short.MAX_VALUE)
+            .addComponent(frame_tbdata, javax.swing.GroupLayout.DEFAULT_SIZE, 703, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -324,105 +315,104 @@ public void loadData() {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void EnterDtqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EnterDtqActionPerformed
-        performSearch();
-    }//GEN-LAST:event_EnterDtqActionPerformed
-
     private void performSearch() {
-    String keyword = EnterDtq.getText().trim();
-    
-    if (keyword.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-        return;
+        String keyword = EnterDtq.getText().trim();
+
+        if (keyword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        ArrayList<DiemThamQuan> results = DiemThamQuan.selectLikeKey(keyword);
+        DefaultTableModel model = (DefaultTableModel) TableDiemThamQuan.getModel();
+        model.setRowCount(0); // Xóa dữ liệu cũ
+
+        for (DiemThamQuan diem : results) {
+            model.addRow(new Object[]{
+                diem.getMaDiemThamQuan(),
+                diem.getTenDiaDiem(),
+                diem.getDiaChi()
+            });
+        }
     }
 
-    ArrayList<DiemThamQuan> results = DiemThamQuan.selectLikeKey(keyword);
-    DefaultTableModel model = (DefaultTableModel) TableDiemThamQuan.getModel();
-    model.setRowCount(0); // Xóa dữ liệu cũ
-
-    for (DiemThamQuan diem : results) {
-        model.addRow(new Object[]{
-            diem.getMaDiemThamQuan(),
-            diem.getTenDiaDiem(),
-            diem.getDiaChi()
-        });
-    }
-}
-    
     private void btnAddDtqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddDtqActionPerformed
-       String maDiem = txtMaDiemThamQuan.getText();
-    String tenDiem = txtTenDiemThamQuan.getText();
-    String diaChi = txtDiaChiDiemThamQuan.getText();
+        String maDiem = txtMaDiemThamQuan.getText();
+        String tenDiem = txtTenDiemThamQuan.getText();
+        String diaChi = txtDiaChiDiemThamQuan.getText();
 
-    if (maDiem.isEmpty() || tenDiem.isEmpty() || diaChi.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        if (maDiem.isEmpty() || tenDiem.isEmpty() || diaChi.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    DiemThamQuan diem = new DiemThamQuan(maDiem, tenDiem, diaChi);
-    int result = DiemThamQuan.insert(diem);
-    if (result > 0) {
-        JOptionPane.showMessageDialog(this, "Thêm điểm tham quan thành công!");
-        loadData();
-        clearInputFields(); // Xóa các trường nhập liệu
-    } else {
-        JOptionPane.showMessageDialog(this, "Thêm điểm tham quan thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    }
+        DiemThamQuan diem = new DiemThamQuan(maDiem, tenDiem, diaChi);
+        int result = DiemThamQuan.insert(diem);
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Thêm điểm tham quan thành công!");
+            loadData();
+            clearInputFields(); // Xóa các trường nhập liệu
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm điểm tham quan thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnAddDtqActionPerformed
 
     private void btnUpdateDtqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateDtqActionPerformed
         int selectedRow = TableDiemThamQuan.getSelectedRow();
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn điểm tham quan cần cập nhật!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn điểm tham quan cần cập nhật!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    String maDiem = txtMaDiemThamQuan.getText();
-    String tenDiem = txtTenDiemThamQuan.getText();
-    String diaChi = txtDiaChiDiemThamQuan.getText();
+        String maDiem = txtMaDiemThamQuan.getText();
+        String tenDiem = txtTenDiemThamQuan.getText();
+        String diaChi = txtDiaChiDiemThamQuan.getText();
 
-    DiemThamQuan diem = new DiemThamQuan(maDiem, tenDiem, diaChi);
-    int result = DiemThamQuan.update(diem);
-    if (result > 0) {
-        JOptionPane.showMessageDialog(this, "Cập nhật điểm tham quan thành công!");
-        loadData();
-        clearInputFields(); // Xóa các trường nhập liệu
-    } else {
-        JOptionPane.showMessageDialog(this, "Cập nhật điểm tham quan thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    }
+        DiemThamQuan diem = new DiemThamQuan(maDiem, tenDiem, diaChi);
+        int result = DiemThamQuan.update(diem);
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Cập nhật điểm tham quan thành công!");
+            loadData();
+            clearInputFields();
+            btnAddDtq.setEnabled(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Cập nhật điểm tham quan thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnUpdateDtqActionPerformed
 
     private void btnXoaDtqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaDtqActionPerformed
         int selectedRow = TableDiemThamQuan.getSelectedRow();
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn điểm tham quan cần xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    String maDiem = TableDiemThamQuan.getValueAt(selectedRow, 0).toString();
-
-    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa điểm tham quan này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-    if (confirm == JOptionPane.YES_OPTION) {
-        int result = DiemThamQuan.delete(maDiem);
-        if (result > 0) {
-            JOptionPane.showMessageDialog(this, "Xóa điểm tham quan thành công!");
-            loadData(); // Tải lại dữ liệu
-        } else {
-            JOptionPane.showMessageDialog(this, "Xóa điểm tham quan thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn điểm tham quan cần xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-    }
+
+        String maDiem = TableDiemThamQuan.getValueAt(selectedRow, 0).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa điểm tham quan này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            int result = DiemThamQuan.delete(maDiem);
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Xóa điểm tham quan thành công!");
+                loadData();
+                btnAddDtq.setEnabled(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa điểm tham quan thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_btnXoaDtqActionPerformed
 
     private void btnrefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnrefreshActionPerformed
         clearInputFields();
         loadData();
+        btnAddDtq.setEnabled(true);
     }//GEN-LAST:event_btnrefreshActionPerformed
 
     private void btn_searchDTQMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_searchDTQMouseClicked
         performSearch();
     }//GEN-LAST:event_btn_searchDTQMouseClicked
 
-        public void clearInputFields() {
+    public void clearInputFields() {
         txtMaDiemThamQuan.setText("");
         txtTenDiemThamQuan.setText("");
         txtDiaChiDiemThamQuan.setText("");
@@ -430,7 +420,7 @@ public void loadData() {
 
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField EnterDtq;
+    private javax.swing.JTextPane EnterDtq;
     private javax.swing.JTable TableDiemThamQuan;
     private javax.swing.JButton btnAddDtq;
     private javax.swing.JButton btnUpdateDtq;
@@ -446,6 +436,7 @@ public void loadData() {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField txtDiaChiDiemThamQuan;
     private javax.swing.JTextField txtMaDiemThamQuan;
     private javax.swing.JTextField txtTenDiemThamQuan;

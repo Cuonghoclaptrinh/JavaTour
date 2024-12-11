@@ -4,7 +4,6 @@
  */
 package tour;
 
-import Control.DAO_BookTour;
 import Object.DatTour;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -84,16 +83,16 @@ public class ListBooked extends javax.swing.JInternalFrame {
     private void showPaymentForm(String maDatTour, String tenKh, String diaChi, String cccd, String tenTour,
             int soLuong, double gia, double tongTien, LocalDate ngayDat) throws SQLException {
         Payment payment = new Payment(maDatTour, tenKh, diaChi, cccd, tenTour, soLuong, gia, tongTien, ngayDat);
-        
-         payment.addWindowListener(new java.awt.event.WindowAdapter() {
-        @Override
-        public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-            loadData();
-        }
-    });
-        
+
+        payment.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+                loadData();
+            }
+        });
+
         payment.setVisible(true);
-        
+
     }
 
     private void loadData() {
@@ -123,10 +122,11 @@ public class ListBooked extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         frame_nav = new javax.swing.JPanel();
-        Entertext = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         btnSearch = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        Entertext = new javax.swing.JTextPane();
         frame_tbdata = new javax.swing.JScrollPane();
         TableListBooked = new javax.swing.JTable();
 
@@ -137,14 +137,6 @@ public class ListBooked extends javax.swing.JInternalFrame {
 
         frame_nav.setBackground(new java.awt.Color(76, 148, 189));
         frame_nav.setPreferredSize(new java.awt.Dimension(700, 60));
-
-        Entertext.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        Entertext.setBorder(null);
-        Entertext.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EntertextActionPerformed(evt);
-            }
-        });
 
         btnSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/Search_btn.png"))); // NOI18N
         btnSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -159,13 +151,16 @@ public class ListBooked extends javax.swing.JInternalFrame {
         jLabel1.setText("Chuyến Đi Đã Đặt");
         jLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
+        Entertext.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
+        jScrollPane1.setViewportView(Entertext);
+
         javax.swing.GroupLayout frame_navLayout = new javax.swing.GroupLayout(frame_nav);
         frame_nav.setLayout(frame_navLayout);
         frame_navLayout.setHorizontalGroup(
             frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(frame_navLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(Entertext, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSearch)
                 .addGap(53, 53, 53)
@@ -184,13 +179,14 @@ public class ListBooked extends javax.swing.JInternalFrame {
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Entertext, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnSearch))))
                 .addGap(13, 13, 13))
         );
 
         frame_tbdata.setPreferredSize(new java.awt.Dimension(693, 281));
 
+        TableListBooked.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         TableListBooked.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -220,10 +216,6 @@ public class ListBooked extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void EntertextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EntertextActionPerformed
-        searchBookings();
-    }//GEN-LAST:event_EntertextActionPerformed
-
     private void btnSearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSearchMouseClicked
         searchBookings();
     }//GEN-LAST:event_btnSearchMouseClicked
@@ -252,12 +244,13 @@ public class ListBooked extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField Entertext;
+    private javax.swing.JTextPane Entertext;
     private javax.swing.JTable TableListBooked;
     private javax.swing.JLabel btnSearch;
     private javax.swing.JPanel frame_nav;
     private javax.swing.JScrollPane frame_tbdata;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

@@ -48,8 +48,8 @@ public class NhanVien {
     }
 
     // Phương thức select theo mã nhân viên
-    public static NhanVien selectByKey(String id) {
-        ArrayList<Object[]> results = DAO_Queries.Select(QUERY_SELECT_BY_KEY, id);
+    public static NhanVien selectByKey(String email, String password) {
+        ArrayList<Object[]> results = DAO_Queries.Select(QUERY_SELECT_BY_KEY, email,password);
         if (!results.isEmpty()) {
             return new NhanVien(results.get(0));
         }
@@ -84,7 +84,7 @@ public class NhanVien {
     // Câu truy vấn SQL
     public static final String TABLE = "NhanVien";
     public static final String QUERY_SELECT_ALL = "SELECT * FROM " + TABLE;
-    public static final String QUERY_SELECT_BY_KEY = "SELECT * FROM " + TABLE + " WHERE id = ?";
+    public static final String QUERY_SELECT_BY_KEY = "SELECT * FROM " + TABLE + " WHERE email = ? AND pass_word = ? ";
     public static final String QUERY_INSERT = "INSERT INTO " + TABLE + " (id, full_name, cccd, email,pass_word, chuc_vu) VALUES (?, ?, ?, ?, ?, ?)";
     public static final String QUERY_UPDATE_BY_KEY = "UPDATE " + TABLE + " SET full_name = ?, cccd = ?, email = ?, chuc_vu = ? WHERE id = ?";
     public static final String QUERY_DELETE_BY_KEY = "DELETE FROM " + TABLE + " WHERE id = ?";

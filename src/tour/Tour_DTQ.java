@@ -21,14 +21,14 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
     /**
      * Creates new form TourDTQ
      */
-    
     private DefaultTableModel model;
-    public Tour_DTQ() {
-        initComponents();     
-        model = (DefaultTableModel) tableTourDTQ.getModel();
 
+    public Tour_DTQ() {
+        initComponents();
+        model = (DefaultTableModel) tableTourDTQ.getModel();
+        tableTourDTQ.setDefaultEditor(Object.class, null);
         loadData();
-        
+
         // Sự kiện nhấp chuột để chọn hàng trong bảng
         tableTourDTQ.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -36,26 +36,28 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
             }
         });
     }
-    
-    private void loadData() {
-    model.setRowCount(0); // Xóa dữ liệu cũ
 
-    ArrayList<TourDTQ> tourList = TourDTQ.selectAll();
-    for (TourDTQ tour : tourList) {
-        model.addRow(new Object[]{
-            tour.getMaTour(),
-            tour.getMaDiemThamQuan()
-        });
-    }
+    private void loadData() {
+        model.setRowCount(0); // Xóa dữ liệu cũ
+
+        ArrayList<TourDTQ> tourList = TourDTQ.selectAll();
+        for (TourDTQ tour : tourList) {
+            model.addRow(new Object[]{
+                tour.getMaTour(),
+                tour.getMaDiemThamQuan()
+            });
+        }
     }
 
     private void tableDTQMouseClicked(MouseEvent evt) {
-        int selectedRow = tableTourDTQ.getSelectedRow(); // Lấy chỉ số dòng được chọn
+        int selectedRow = tableTourDTQ.getSelectedRow();
+        btnAddTourDTQ.setEnabled(false);
+        txtMaTour.enable(false);
         if (selectedRow != -1) {
             // Lấy giá trị từ bảng và điền vào các trường nhập liệu
             String maTour = tableTourDTQ.getValueAt(selectedRow, 0).toString();
             String maDiemThamQuan = tableTourDTQ.getValueAt(selectedRow, 1).toString();
-            
+
             txtMaTour.setText(maTour);
             txtMaDTQ.setText(maDiemThamQuan);
         }
@@ -71,10 +73,11 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         frame_nav = new javax.swing.JPanel();
-        txtSearchDTQ = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         btn_searchtourdtq = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtSearchDTQ = new javax.swing.JTextPane();
         frame_tbdata = new javax.swing.JScrollPane();
         tableTourDTQ = new javax.swing.JTable();
         frame_input = new javax.swing.JPanel();
@@ -96,14 +99,6 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
         frame_nav.setBackground(new java.awt.Color(76, 148, 189));
         frame_nav.setPreferredSize(new java.awt.Dimension(700, 60));
 
-        txtSearchDTQ.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtSearchDTQ.setBorder(null);
-        txtSearchDTQ.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtSearchDTQActionPerformed(evt);
-            }
-        });
-
         btn_searchtourdtq.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/Search_btn.png"))); // NOI18N
         btn_searchtourdtq.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_searchtourdtq.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -116,18 +111,21 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
         jLabel2.setForeground(new java.awt.Color(204, 204, 204));
         jLabel2.setText("Tham quan địa danh");
 
+        txtSearchDTQ.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
+        jScrollPane1.setViewportView(txtSearchDTQ);
+
         javax.swing.GroupLayout frame_navLayout = new javax.swing.GroupLayout(frame_nav);
         frame_nav.setLayout(frame_navLayout);
         frame_navLayout.setHorizontalGroup(
             frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(frame_navLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(txtSearchDTQ, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_searchtourdtq)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(76, 76, 76)
                 .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
                 .addComponent(jLabel2)
                 .addGap(69, 69, 69))
         );
@@ -137,14 +135,16 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
                 .addContainerGap(14, Short.MAX_VALUE)
                 .addGroup(frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(btn_searchtourdtq)
                     .addComponent(jLabel7)
-                    .addComponent(txtSearchDTQ, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_searchtourdtq)))
                 .addGap(14, 14, 14))
         );
 
         frame_tbdata.setPreferredSize(new java.awt.Dimension(693, 281));
 
+        tableTourDTQ.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         tableTourDTQ.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
@@ -162,14 +162,14 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
         frame_input.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 1, 0, new java.awt.Color(0, 0, 0)));
         frame_input.setPreferredSize(new java.awt.Dimension(695, 90));
 
-        txtMaTour.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtMaTour.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         jLabel9.setText("Mã Tour");
 
-        txtMaDTQ.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtMaDTQ.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         jLabel8.setText("Mã DTQ");
 
         javax.swing.GroupLayout frame_inputLayout = new javax.swing.GroupLayout(frame_input);
@@ -203,7 +203,7 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
         frame_btnfunction.setPreferredSize(new java.awt.Dimension(695, 50));
 
         btnAddTourDTQ.setBackground(new java.awt.Color(52, 103, 113));
-        btnAddTourDTQ.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnAddTourDTQ.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         btnAddTourDTQ.setForeground(new java.awt.Color(255, 255, 255));
         btnAddTourDTQ.setText("Thêm");
         btnAddTourDTQ.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -214,7 +214,7 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
         });
 
         btnUpdateTourDTQ.setBackground(new java.awt.Color(52, 103, 113));
-        btnUpdateTourDTQ.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnUpdateTourDTQ.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         btnUpdateTourDTQ.setForeground(new java.awt.Color(255, 255, 255));
         btnUpdateTourDTQ.setText("Câp nhật");
         btnUpdateTourDTQ.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -225,7 +225,7 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
         });
 
         btnXoaTourDTQ.setBackground(new java.awt.Color(52, 103, 113));
-        btnXoaTourDTQ.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnXoaTourDTQ.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         btnXoaTourDTQ.setForeground(new java.awt.Color(255, 255, 255));
         btnXoaTourDTQ.setText("Xóa");
         btnXoaTourDTQ.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -236,7 +236,7 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
         });
 
         RefreshDTQ.setBackground(new java.awt.Color(52, 103, 113));
-        RefreshDTQ.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        RefreshDTQ.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         RefreshDTQ.setForeground(new java.awt.Color(255, 255, 255));
         RefreshDTQ.setText("làm mới");
         RefreshDTQ.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -264,7 +264,7 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
         frame_btnfunctionLayout.setVerticalGroup(
             frame_btnfunctionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(frame_btnfunctionLayout.createSequentialGroup()
-                .addContainerGap(22, Short.MAX_VALUE)
+                .addContainerGap(21, Short.MAX_VALUE)
                 .addGroup(frame_btnfunctionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddTourDTQ)
                     .addComponent(btnUpdateTourDTQ)
@@ -297,87 +297,89 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtSearchDTQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchDTQActionPerformed
-        
-    }//GEN-LAST:event_txtSearchDTQActionPerformed
-
     private void btnAddTourDTQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTourDTQActionPerformed
-         String maTour = txtMaTour.getText();
-    String maDiemThamQuan = txtMaDTQ.getText();
+        String maTour = txtMaTour.getText();
+        String maDiemThamQuan = txtMaDTQ.getText();
 
-    if (maTour.isEmpty() || maDiemThamQuan.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        if (maTour.isEmpty() || maDiemThamQuan.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    TourDTQ tourDTQ = new TourDTQ(maTour, maDiemThamQuan);
-    int result = TourDTQ.insert(tourDTQ);
-    if (result > 0) {
-        JOptionPane.showMessageDialog(this, "Thêm mới thành công!");
-        loadData(); // Tải lại dữ liệu
-        clearInputFields(); // Xóa các trường nhập liệu
-    } else {
-        JOptionPane.showMessageDialog(this, "Thêm mới thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    }
+        TourDTQ tourDTQ = new TourDTQ(maTour, maDiemThamQuan);
+        int result = TourDTQ.insert(tourDTQ);
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Thêm mới thành công!");
+            loadData(); // Tải lại dữ liệu
+            clearInputFields(); // Xóa các trường nhập liệu
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm mới thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnAddTourDTQActionPerformed
 
     private void btnUpdateTourDTQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateTourDTQActionPerformed
         int selectedRow = tableTourDTQ.getSelectedRow();
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn một bản ghi để cập nhật!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một bản ghi để cập nhật!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    String old_maDTQ = tableTourDTQ.getValueAt(selectedRow, 1).toString();
-    
-    String maTour = txtMaTour.getText();
-    String maDiemThamQuan = txtMaDTQ.getText();
-   
-    TourDTQ tourDTQ = new TourDTQ(maTour, maDiemThamQuan);
-    int result = TourDTQ.update(maTour,old_maDTQ,maDiemThamQuan);
+        String old_maDTQ = tableTourDTQ.getValueAt(selectedRow, 1).toString();
+
+        String maTour = txtMaTour.getText();
+        String maDiemThamQuan = txtMaDTQ.getText();
+
+        TourDTQ tourDTQ = new TourDTQ(maTour, maDiemThamQuan);
+        int result = TourDTQ.update(maTour, old_maDTQ, maDiemThamQuan);
         System.out.println(maDiemThamQuan);
         System.out.println(maTour);
         System.out.println(old_maDTQ);
         System.out.println(result);
-    if (result > 0) {
-        JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
-        loadData(); // Tải lại dữ liệu
-        clearInputFields(); // Xóa các trường nhập liệu
-    } else {
-        JOptionPane.showMessageDialog(this, "Cập nhật thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    }
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+            loadData();
+            clearInputFields();
+            btnAddTourDTQ.setEnabled(true);
+            txtMaTour.enable(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Cập nhật thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnUpdateTourDTQActionPerformed
 
     private void btnXoaTourDTQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaTourDTQActionPerformed
         int selectedRow = tableTourDTQ.getSelectedRow();
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn một bản ghi để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    String maTour = tableTourDTQ.getValueAt(selectedRow, 0).toString();
-    String maDiemThamQuan = tableTourDTQ.getValueAt(selectedRow, 1).toString();
-
-    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa bản ghi này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-    if (confirm == JOptionPane.YES_OPTION) {
-        int result = TourDTQ.delete(maTour, maDiemThamQuan);
-        if (result > 0) {
-            JOptionPane.showMessageDialog(this, "Xóa thành công!");
-            loadData(); // Tải lại dữ liệu
-        } else {
-            JOptionPane.showMessageDialog(this, "Xóa thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một bản ghi để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-    }
+
+        String maTour = tableTourDTQ.getValueAt(selectedRow, 0).toString();
+        String maDiemThamQuan = tableTourDTQ.getValueAt(selectedRow, 1).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa bản ghi này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            int result = TourDTQ.delete(maTour, maDiemThamQuan);
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Xóa thành công!");
+                loadData();
+                btnAddTourDTQ.setEnabled(true);
+                txtMaTour.enable(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_btnXoaTourDTQActionPerformed
 
     public void clearInputFields() {
-    txtMaTour.setText("");
-    txtMaDTQ.setText("");
-}
-    
+        txtMaTour.setText("");
+        txtMaDTQ.setText("");
+    }
+
     private void RefreshDTQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDTQActionPerformed
         clearInputFields();
         loadData();
+        btnAddTourDTQ.setEnabled(true);
+        txtMaTour.enable(true);
     }//GEN-LAST:event_RefreshDTQActionPerformed
 
     private void btn_searchtourdtqMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_searchtourdtqMouseClicked
@@ -385,22 +387,22 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_searchtourdtqMouseClicked
 
     private void performSearch() {
-    String keyword = txtSearchDTQ.getText().trim();
-    
-    if (keyword.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        String keyword = txtSearchDTQ.getText().trim();
 
-    ArrayList<TourDTQ> results = TourDTQ.selectLikeKey(keyword);
-    model.setRowCount(0); // Xóa dữ liệu cũ
-    for (TourDTQ tour : results) {
-        model.addRow(new Object[]{
-            tour.getMaTour(),
-            tour.getMaDiemThamQuan()
-        });
+        if (keyword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        ArrayList<TourDTQ> results = TourDTQ.selectLikeKey(keyword);
+        model.setRowCount(0); // Xóa dữ liệu cũ
+        for (TourDTQ tour : results) {
+            model.addRow(new Object[]{
+                tour.getMaTour(),
+                tour.getMaDiemThamQuan()
+            });
+        }
     }
-}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton RefreshDTQ;
     private javax.swing.JButton btnAddTourDTQ;
@@ -415,9 +417,10 @@ public class Tour_DTQ extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tableTourDTQ;
     private javax.swing.JTextField txtMaDTQ;
     private javax.swing.JTextField txtMaTour;
-    private javax.swing.JTextField txtSearchDTQ;
+    private javax.swing.JTextPane txtSearchDTQ;
     // End of variables declaration//GEN-END:variables
 }

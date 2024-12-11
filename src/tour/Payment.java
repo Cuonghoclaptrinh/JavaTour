@@ -4,8 +4,7 @@
  */
 package tour;
 
-import Control.DAO_BookTour;
-import Control.DAO_ThanhToan;
+import Object.DatTour;
 import Object.ThanhToan;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -441,12 +440,13 @@ public class Payment extends javax.swing.JFrame {
         String madatTour = Pmadattour.getText().trim();
         // Tạo đối tượng thanh toán
         ThanhToan newPayment = new ThanhToan(maThanhToan, madatTour, ngayThanhToan, hinhThuc, tongTien); // Giả sử datTour là đối tượng DatTour đã tạo
-
+        ;
+        
         // Lưu thông tin thanh toán vào cơ sở dữ liệu
         try {
-            if (DAO_ThanhToan.savePayment(newPayment)) {
+            if (ThanhToan.insert(newPayment)>0) {
 
-                DAO_BookTour.updateTourStatus(madatTour, "Đã thanh toán");
+                DatTour.update(madatTour, "Đã thanh toán");
 
                 JOptionPane.showMessageDialog(this, "Thanh toán thành công!");
                 this.dispose();
@@ -454,7 +454,7 @@ public class Payment extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Thanh toán thất bại. Vui lòng thử lại.");
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Lỗi khi lưu thanh toán: " + ex.getMessage());
         }
     }//GEN-LAST:event_HoanThanhActionPerformed
@@ -467,7 +467,7 @@ public class Payment extends javax.swing.JFrame {
             // Tạo mã thanh toán với định dạng "TT01", "TT02", ...
             maThanhToan = "TT" + String.format("%02d", counter);
             counter++;
-        } while (DAO_ThanhToan.isMaThanhToanExist(maThanhToan)); // Kiểm tra trong DAO
+        } while (ThanhToan.isMaThanhToanExist(maThanhToan)); // Kiểm tra trong DAO
 
         return maThanhToan; // Trả về mã thanh toán duy nhất
     }

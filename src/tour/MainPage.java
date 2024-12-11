@@ -10,7 +10,6 @@
  */
 package tour;
 
-import Control.DAO_NhanVien;
 import Object.NhanVien;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -34,7 +33,6 @@ public class MainPage extends javax.swing.JPanel {
 
     private String chucVu;
     private NhanVien userInfo;
-    private Map<String, JInternalFrame> openForms = new HashMap<>();
 
     public void setUserInfo(NhanVien userInfo) {
         idLable.setText(userInfo.getId());
@@ -54,6 +52,7 @@ private boolean hasPermission(String buttonName) {
         case "btn_tour":
         case "btn_khach":
         case "btn_hdv":
+        case "btn_tourhdv":
         case "btn_diemtq":
         case "btn_booking":
         case "btn_listbooked":
@@ -72,12 +71,6 @@ private boolean hasPermission(String buttonName) {
             }
             break;
 
-        // Nút Tour hướng dẫn viên hiện chỉ cấp quyền cho Quản Lý và Nhân Viên
-        case "btn_tourhdv":
-            if ("Quản Lý".equals(chucVu) || "Nhân Viên".equals(chucVu)) {
-                return true; // Cả Quản Lý và Nhân Viên đều có quyền vào
-            }
-            break;
     }
 
     // Các trường hợp không thỏa mãn điều kiện đều trả về false (không có quyền)

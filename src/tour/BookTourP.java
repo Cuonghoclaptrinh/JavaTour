@@ -4,8 +4,7 @@
  */
 package tour;
 
-import Control.DAO_BookTour;
-
+import Control.DAO;
 import Object.DatTour;
 import Object.KhachHang;
 import java.awt.event.KeyAdapter;
@@ -21,6 +20,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import java.sql.*;
 
 /**
  *
@@ -35,11 +35,14 @@ public class BookTourP extends javax.swing.JFrame {
 
     public BookTourP() {
         initComponents();
-        DAO_BookTour tourDAO = new DAO_BookTour();
-        tablebooktour = tourDAO.getTourDataForBooking();
-        TableBooking.setModel(tablebooktour);
-//        loadTourData();
-
+//        DAO_BookTour tourDAO = new DAO_BookTour();
+//        tablebooktour = tourDAO.getTourDataForBooking();
+//        TableBooking.setModel(tablebooktour);
+////        loadTourData();
+        
+        tablebooktour=(DefaultTableModel)TableBooking.getModel();
+        loadTourData();
+        
         txtmakh.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -97,6 +100,27 @@ public class BookTourP extends javax.swing.JFrame {
 
     }
 
+    public void loadTourData(){
+        String sql = "SELECT ma_tour, ten_tour, gia FROM Tour";  // Thay tên bảng nếu cần
+
+    try (Connection conn = DAO.getConnection();  
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+
+        while (rs.next()) {
+            boolean chon = false;  // Mặc định là chưa chọn
+            String maTour = rs.getString("ma_tour");
+            String tenTour = rs.getString("ten_tour");
+            double gia = rs.getDouble("gia");
+
+            // Thêm hàng vào DefaultTableModel
+            tablebooktour.addRow(new Object[]{chon, maTour, tenTour, gia});
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    }
+    
     private void setTodayDate() {
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -521,7 +545,7 @@ public class BookTourP extends javax.swing.JFrame {
 
     // Gọi phương thức lưu vào cơ sở dữ liệu
     try {
-        if (DAO_BookTour.BookT(newBooking)) {
+        if (DatTour.insert(newBooking) >0 ) {
             JOptionPane.showMessageDialog(null, "Đặt tour thành công!");
             Payment payment=new Payment(maDatTour, tenKh, diaChi, cccd, tenTour, soLuong, gia, total, ngayDat);
             payment.setVisible(true);
@@ -565,7 +589,7 @@ public String generateMaDatTour() throws SQLException {
     do {
         maDatTour = "tour" + String.format("%02d", counter);
         counter++;
-    } while (DAO_BookTour.isMaDatTourExist(maDatTour)); // Kiểm tra trong DAO
+    } while (DatTour.isMaDatTourExist(maDatTour)); // Kiểm tra trong DAO
 
     return maDatTour;
 }

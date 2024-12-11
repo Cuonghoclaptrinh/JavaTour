@@ -79,7 +79,13 @@ public class DatTour {
     }
     return datTourModels;
 }
+    public static int insert(DatTour t) {
+        return DAO_Queries.Update(QUERY_INSERT, t.maDatTour, t.matour, t.makhachHang, t.ngayDat, t.soLuongNguoi, t.tongTien);
+    }
 
+    public static int update(String maDatTour, String trangThai) {
+        return DAO_Queries.Update(QUERY_UPDATE_BY_KEY, trangThai, maDatTour);
+    }
 
 
     // Getters and Setters
@@ -138,8 +144,9 @@ public class DatTour {
     
     public static String QUERY_SELECT_ALL = "SELECT * FROM " + TABLE;
     public static String QUERY_SELECT_LIKE_KEY = "SELECT * FROM " + TABLE + " WHERE ma_dat_tour LIKE ? OR ma_tour LIKE ? OR ma_kh LIKE ? ";
-   
-
+    public static String QUERY_UPDATE_BY_KEY = "UPDATE " + TABLE + " SET trang_thai= ?  WHERE ma_dat_tour = ? ";
+    public static String QUERY_INSERT="INSERT INTO DatTour(ma_dat_tour,ma_tour,ma_kh,ngay_dat,so_luong_nguoi,tong_tien) VALUES (?,?,?,?,?,?)";
+    
     
     @Override
 public String toString() {
@@ -195,5 +202,41 @@ public static ArrayList<String> getTourInfoList(String maDatTour) {
         return tourInfoList;
     }
 
+public static boolean isMaDatTourExist(String maDatTour) throws SQLException {
+        boolean exists = false;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DAO.getConnection(); // Kết nối đến cơ sở dữ liệu
+            String sql = "SELECT COUNT(*) FROM DatTour WHERE ma_dat_tour = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, maDatTour);
+            
+            rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                exists = true; // Mã đã tồn tại
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // In ra lỗi nếu có
+            throw e; // Ném lại ngoại lệ để xử lý bên ngoài
+        } finally {
+            // Đóng kết nối và tài nguyên
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        }
+
+        return exists;
+    }
+
+    
 }
 

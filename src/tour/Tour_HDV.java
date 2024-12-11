@@ -10,6 +10,7 @@ import Object.TourHDV;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author MYLAP.VN
@@ -20,43 +21,46 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
      * Creates new form Tour_HDV
      */
     private DefaultTableModel model;
-    
+
     public Tour_HDV() {
-        initComponents();      
+        initComponents();
         model = (DefaultTableModel) tableTourHDV.getModel();
+        tableTourHDV.setDefaultEditor(Object.class, null);
         loadData();
-        
+
         tableTourHDV.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 tableHdvMouseClicked(evt);
             }
         });
     }
-    
-    
-    private void loadData() {
-    model.setRowCount(0); // Xóa dữ liệu cũ
 
-    ArrayList<TourHDV> tourList = TourHDV.selectAll();
-    for (TourHDV t : tourList) {
-        model.addRow(new Object[]{
-            t.getMaTour(),
-            t.getMaHDV()
-        });
-    }
+    private void loadData() {
+        model.setRowCount(0); // Xóa dữ liệu cũ
+
+        ArrayList<TourHDV> tourList = TourHDV.selectAll();
+        for (TourHDV t : tourList) {
+            model.addRow(new Object[]{
+                t.getMaTour(),
+                t.getMaHDV()
+            });
+        }
     }
 
     private void tableHdvMouseClicked(MouseEvent evt) {
-    int selectedRow = tableTourHDV.getSelectedRow(); // Lấy chỉ số dòng được chọn
-    if (selectedRow != -1) {
-        // Lấy giá trị từ bảng và điền vào các trường nhập liệu
-        String maTour = tableTourHDV.getValueAt(selectedRow, 0).toString();
-        String maHdv = tableTourHDV.getValueAt(selectedRow, 1).toString();
-        
-        txtMaTour.setText(maTour);
-        txtMaHDV.setText(maHdv);
+        int selectedRow = tableTourHDV.getSelectedRow();
+        btnAddHdvTour.setEnabled(false);
+        txtMaTour.enable(false);
+        if (selectedRow != -1) {
+            // Lấy giá trị từ bảng và điền vào các trường nhập liệu
+            String maTour = tableTourHDV.getValueAt(selectedRow, 0).toString();
+            String maHdv = tableTourHDV.getValueAt(selectedRow, 1).toString();
+
+            txtMaTour.setText(maTour);
+            txtMaHDV.setText(maHdv);
+        }
     }
-}
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -67,10 +71,11 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         frame_nav = new javax.swing.JPanel();
-        txtSearchHdv = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         btn_search = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtSearchHdv = new javax.swing.JTextPane();
         frame_tbdata = new javax.swing.JScrollPane();
         tableTourHDV = new javax.swing.JTable();
         frame_input = new javax.swing.JPanel();
@@ -91,14 +96,6 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
         frame_nav.setBackground(new java.awt.Color(76, 148, 189));
         frame_nav.setPreferredSize(new java.awt.Dimension(700, 60));
 
-        txtSearchHdv.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtSearchHdv.setBorder(null);
-        txtSearchHdv.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtSearchHdvActionPerformed(evt);
-            }
-        });
-
         btn_search.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/Search_btn.png"))); // NOI18N
         btn_search.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_search.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -111,18 +108,21 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
         jLabel2.setForeground(new java.awt.Color(204, 204, 204));
         jLabel2.setText("Hành trình HDV");
 
+        txtSearchHdv.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
+        jScrollPane1.setViewportView(txtSearchHdv);
+
         javax.swing.GroupLayout frame_navLayout = new javax.swing.GroupLayout(frame_nav);
         frame_nav.setLayout(frame_navLayout);
         frame_navLayout.setHorizontalGroup(
             frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(frame_navLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(txtSearchHdv, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_search)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 270, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2)
                 .addGap(69, 69, 69))
         );
@@ -131,15 +131,16 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, frame_navLayout.createSequentialGroup()
                 .addContainerGap(14, Short.MAX_VALUE)
                 .addGroup(frame_navLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addComponent(btn_search)
-                    .addComponent(jLabel7)
-                    .addComponent(txtSearchHdv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel7))
                 .addGap(14, 14, 14))
         );
 
         frame_tbdata.setPreferredSize(new java.awt.Dimension(693, 281));
 
+        tableTourHDV.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         tableTourHDV.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
@@ -157,14 +158,14 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
         frame_input.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 1, 0, new java.awt.Color(0, 0, 0)));
         frame_input.setPreferredSize(new java.awt.Dimension(695, 90));
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         jLabel8.setText("Mã HDV");
 
-        txtMaHDV.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtMaHDV.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
 
-        txtMaTour.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtMaTour.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         jLabel9.setText("Mã Tour");
 
         javax.swing.GroupLayout frame_inputLayout = new javax.swing.GroupLayout(frame_input);
@@ -198,7 +199,7 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
         frame_btnfunction.setPreferredSize(new java.awt.Dimension(695, 50));
 
         btnAddHdvTour.setBackground(new java.awt.Color(52, 103, 113));
-        btnAddHdvTour.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnAddHdvTour.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         btnAddHdvTour.setForeground(new java.awt.Color(255, 255, 255));
         btnAddHdvTour.setText("Thêm");
         btnAddHdvTour.addActionListener(new java.awt.event.ActionListener() {
@@ -208,7 +209,7 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
         });
 
         btnUpdateHdvTour.setBackground(new java.awt.Color(52, 103, 113));
-        btnUpdateHdvTour.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnUpdateHdvTour.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         btnUpdateHdvTour.setForeground(new java.awt.Color(255, 255, 255));
         btnUpdateHdvTour.setText("Câp nhật");
         btnUpdateHdvTour.addActionListener(new java.awt.event.ActionListener() {
@@ -218,7 +219,7 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
         });
 
         btnXoaHdvTour.setBackground(new java.awt.Color(52, 103, 113));
-        btnXoaHdvTour.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnXoaHdvTour.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         btnXoaHdvTour.setForeground(new java.awt.Color(255, 255, 255));
         btnXoaHdvTour.setText("Xóa");
         btnXoaHdvTour.addActionListener(new java.awt.event.ActionListener() {
@@ -228,7 +229,7 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
         });
 
         RefreshHdv.setBackground(new java.awt.Color(52, 103, 113));
-        RefreshHdv.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        RefreshHdv.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         RefreshHdv.setForeground(new java.awt.Color(255, 255, 255));
         RefreshHdv.setText("làm mới");
         RefreshHdv.addActionListener(new java.awt.event.ActionListener() {
@@ -255,7 +256,7 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
         frame_btnfunctionLayout.setVerticalGroup(
             frame_btnfunctionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(frame_btnfunctionLayout.createSequentialGroup()
-                .addContainerGap(21, Short.MAX_VALUE)
+                .addContainerGap(20, Short.MAX_VALUE)
                 .addGroup(frame_btnfunctionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddHdvTour)
                     .addComponent(btnUpdateHdvTour)
@@ -289,86 +290,86 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     public void clearInputFields() {
-    txtMaTour.setText("");
-    txtMaHDV.setText("");
-}
-    
-    private void txtSearchHdvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchHdvActionPerformed
-        performSearchTourHDV();
-    }//GEN-LAST:event_txtSearchHdvActionPerformed
+        txtMaTour.setText("");
+        txtMaHDV.setText("");
+    }
 
     private void btnAddHdvTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddHdvTourActionPerformed
         String maTour = txtMaTour.getText().trim();
-    String maHDV = txtMaHDV.getText().trim();
+        String maHDV = txtMaHDV.getText().trim();
 
-    if (maTour.isEmpty() || maHDV.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        if (maTour.isEmpty() || maHDV.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    // Thực hiện thêm mới
-    TourHDV tourHDV = new TourHDV(maTour, maHDV);
-    int result = TourHDV.insert(tourHDV);
+        // Thực hiện thêm mới
+        TourHDV tourHDV = new TourHDV(maTour, maHDV);
+        int result = TourHDV.insert(tourHDV);
 
-    if (result > 0) {
-        JOptionPane.showMessageDialog(this, "Thêm thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        loadData();
-        clearInputFields();
-    } else {
-        JOptionPane.showMessageDialog(this, "Thêm thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    }
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Thêm thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            loadData();
+            clearInputFields();
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnAddHdvTourActionPerformed
 
     private void btnUpdateHdvTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateHdvTourActionPerformed
-            int selectedRow = tableTourHDV.getSelectedRow();
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn một bản ghi để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-        
+        int selectedRow = tableTourHDV.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một bản ghi để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         String maTour = txtMaTour.getText().trim();
         String maHDV = txtMaHDV.getText().trim();
-        
+
         String old_maHDV = tableTourHDV.getValueAt(selectedRow, 1).toString();
 
+        // Thực hiện cập nhật
+        int result = TourHDV.update(maTour, old_maHDV, maHDV);
 
-
-    // Thực hiện cập nhật
-    int result = TourHDV.update(maTour, old_maHDV,maHDV);
-
-    if (result > 0) {
-        JOptionPane.showMessageDialog(this, "Cập nhật thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        loadData();
-        clearInputFields();
-    } else {
-        JOptionPane.showMessageDialog(this, "Cập nhật thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    }
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Cập nhật thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            loadData();
+            clearInputFields();
+            btnAddHdvTour.setEnabled(true);
+            txtMaTour.enable(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Cập nhật thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnUpdateHdvTourActionPerformed
 
     private void btnXoaHdvTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaHdvTourActionPerformed
         String maTour = txtMaTour.getText().trim();
-    String maHDV = txtMaHDV.getText().trim();
+        String maHDV = txtMaHDV.getText().trim();
 
-    if (maTour.isEmpty() || maHDV.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        if (maTour.isEmpty() || maHDV.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    // Thực hiện xóa
-    int result = TourHDV.delete(maTour, maHDV);
+        // Thực hiện xóa
+        int result = TourHDV.delete(maTour, maHDV);
 
-    if (result > 0) {
-        JOptionPane.showMessageDialog(this, "Xóa thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        loadData();
-        clearInputFields();
-    } else {
-        JOptionPane.showMessageDialog(this, "Xóa thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    }
+        if (result > 0) {
+            JOptionPane.showMessageDialog(this, "Xóa thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            loadData();
+            clearInputFields();
+            btnAddHdvTour.setEnabled(true);
+            txtMaTour.enable(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Xóa thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnXoaHdvTourActionPerformed
 
     private void RefreshHdvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshHdvActionPerformed
         clearInputFields();
         loadData();
+        btnAddHdvTour.setEnabled(true);
+        txtMaTour.enable(true);
     }//GEN-LAST:event_RefreshHdvActionPerformed
 
     private void btn_searchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_searchMouseClicked
@@ -376,29 +377,29 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btn_searchMouseClicked
 
     private void performSearchTourHDV() {
-    String keyword = txtSearchHdv.getText().trim();
-    
-    if (keyword.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-    
-    ArrayList<TourHDV> results = TourHDV.selectLikeKey(keyword);
-    model.setRowCount(0);
-    
-    for (TourHDV tourHDV : results) {
-        model.addRow(new Object[] {
-            tourHDV.getMaTour(),
-            tourHDV.getMaHDV()
-        });
-    }
-    
-    if (results.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-    }
-}
+        String keyword = txtSearchHdv.getText().trim();
 
-    
+        if (keyword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa để tìm kiếm.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        ArrayList<TourHDV> results = TourHDV.selectLikeKey(keyword);
+        model.setRowCount(0);
+
+        for (TourHDV tourHDV : results) {
+            model.addRow(new Object[]{
+                tourHDV.getMaTour(),
+                tourHDV.getMaHDV()
+            });
+        }
+
+        if (results.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton RefreshHdv;
     private javax.swing.JButton btnAddHdvTour;
@@ -413,9 +414,10 @@ public class Tour_HDV extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tableTourHDV;
     private javax.swing.JTextField txtMaHDV;
     private javax.swing.JTextField txtMaTour;
-    private javax.swing.JTextField txtSearchHdv;
+    private javax.swing.JTextPane txtSearchHdv;
     // End of variables declaration//GEN-END:variables
 }

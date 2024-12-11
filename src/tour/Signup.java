@@ -5,6 +5,7 @@
 package tour;
 
 import Control.DAO;
+import Object.NhanVien;
 import java.sql.*;
 import javax.swing.JOptionPane;
 
@@ -259,7 +260,8 @@ public class Signup extends javax.swing.JPanel {
     }//GEN-LAST:event_passActionPerformed
 
     private void signupbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signupbtnActionPerformed
-        String fullname1, email1, password1, cccd1;
+        
+        String id,fullname1, email1, password1, cccd1;
     try {
         // Kết nối với cơ sở dữ liệu
         Connection con = DAO.getConnection();
@@ -283,6 +285,7 @@ public class Signup extends javax.swing.JPanel {
         }
 
         // Gán dữ liệu
+        id="";
         fullname1 = fname.getText();
         email1 = emailaddress.getText();
         cccd1 = can_cuoc.getText();
@@ -299,19 +302,22 @@ public class Signup extends javax.swing.JPanel {
         if (rs.next()) {
             JOptionPane.showMessageDialog(this, "Tài khoản với email này đã tồn tại", "ERROR", JOptionPane.ERROR_MESSAGE);
         } else {
-            // Chèn người dùng mới vào bảng NhanVien với vai trò mặc định là "Nhân Viên"
-            String insertQuery = "INSERT INTO NhanVien(full_name, cccd, email, pass_word, chuc_vu) VALUES (?, ?, ?, ?, ?)";
-
-            PreparedStatement insertStmt = con.prepareStatement(insertQuery);
-            insertStmt.setString(1, fullname1);
-            insertStmt.setString(2, cccd1);
-            insertStmt.setString(3, email1);
-            insertStmt.setString(4, password1);
-            insertStmt.setString(5, defaultRole); // Vai trò mặc định là "Nhân Viên"
-
-            // Thực thi truy vấn
-            insertStmt.executeUpdate();
-
+//            // Chèn người dùng mới vào bảng NhanVien với vai trò mặc định là "Nhân Viên"
+//            String insertQuery = "INSERT INTO NhanVien(full_name, cccd, email, pass_word, chuc_vu) VALUES (?, ?, ?, ?, ?)";
+//
+//            PreparedStatement insertStmt = con.prepareStatement(insertQuery);
+//            insertStmt.setString(1, fullname1);
+//            insertStmt.setString(2, cccd1);
+//            insertStmt.setString(3, email1);
+//            insertStmt.setString(4, password1);
+//            insertStmt.setString(5, defaultRole); // Vai trò mặc định là "Nhân Viên"
+//
+//            // Thực thi truy vấn
+//            insertStmt.executeUpdate();
+//            
+            NhanVien nv=new NhanVien(id, fullname1, cccd1, email1, password1, defaultRole);
+            NhanVien.insert(nv);
+            
             // Xóa các trường nhập
             fname.setText("");
             emailaddress.setText("");

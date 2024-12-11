@@ -5,13 +5,14 @@
 package tour;
 
 import Control.DAO;
-import Control.DAO_NhanVien;
 import Object.NhanVien;
 import javax.swing.JOptionPane;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -23,12 +24,13 @@ public class Login extends javax.swing.JPanel {
     /**
      * Creates new form Login
      */
-    private MainFrm mainFrm; 
-        public Login(MainFrm mainFrm) {
+    private MainFrm mainFrm;
+    private QuanLyTourP QuanLyTour;
+
+    public Login(MainFrm mainFrm) {
         this.mainFrm = mainFrm; // Lưu tham chiếu đến MainFrm
         initComponents();
-        
-        
+
     }
 
     /**
@@ -227,29 +229,33 @@ public class Login extends javax.swing.JPanel {
     }//GEN-LAST:event_pass1ActionPerformed
 
     private void loginbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginbtnActionPerformed
-        String email = emailaddress1.getText();
+    String email = emailaddress1.getText();
     String password = new String(pass1.getPassword()); // Lấy mật khẩu từ JPasswordField
 
     // Kiểm tra đăng nhập và lấy thông tin nhân viên
-    NhanVien userInfo = DAO_NhanVien.getUserInfo(email, password);
+    NhanVien userInfo = NhanVien.selectByKey(email, password);
     if (userInfo != null) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
-
-        // Mở trang chính và thiết lập quyền cho các nút
-        javax.swing.JFrame mainFrame = new javax.swing.JFrame("Main Page");
-        MainPage mainPage = new MainPage();
-
-        // Truyền quyền của người dùng vào MainPage
-        mainPage.setUserInfo(userInfo);
-
-        mainFrame.setContentPane(mainPage);
-        mainFrame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        mainFrame.pack();
-        mainFrame.setLocationRelativeTo(null); // Đặt vị trí giữa màn hình
-        mainFrame.setVisible(true); // Hiển thị MainPage
-
-        // Ẩn JFrame hiện tại (Login)
-        javax.swing.SwingUtilities.getWindowAncestor(this).setVisible(false);
+        try {
+            javax.swing.JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
+            
+            // Mở trang chính và thiết lập quyền cho các nút
+            javax.swing.JFrame mainFrame = new javax.swing.JFrame("Main Page");
+            MainPage mainPage = new MainPage();
+            
+            // Truyền quyền của người dùng vào MainPage
+            mainPage.setUserInfo(userInfo);
+            
+            mainFrame.setContentPane(mainPage);
+            mainFrame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+            mainFrame.pack();
+            mainFrame.setLocationRelativeTo(null); // Đặt vị trí giữa màn hình
+            mainFrame.setVisible(true); // Hiển thị MainPage
+            
+            // Ẩn JFrame hiện tại (Login)
+            javax.swing.SwingUtilities.getWindowAncestor(this).setVisible(false);
+        } catch (SQLException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
     } else {
         javax.swing.JOptionPane.showMessageDialog(this, "Email hoặc mật khẩu không chính xác.", "Lỗi đăng nhập", javax.swing.JOptionPane.ERROR_MESSAGE);
     }

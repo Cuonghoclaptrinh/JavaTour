@@ -294,10 +294,10 @@ public class QuanLyTourP extends javax.swing.JInternalFrame {
         jLabel12.setText("Giá");
 
         txtNgayBD.setDateFormatString("yyyy-MM-dd");
-        txtNgayBD.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
+        txtNgayBD.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
 
         txtNgayKT.setDateFormatString("yyyy-MM-dd");
-        txtNgayKT.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
+        txtNgayKT.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
 
         txtMaTour.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
 
@@ -308,9 +308,7 @@ public class QuanLyTourP extends javax.swing.JInternalFrame {
             .addGroup(frame_inputLayout.createSequentialGroup()
                 .addContainerGap(21, Short.MAX_VALUE)
                 .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, frame_inputLayout.createSequentialGroup()
-                        .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(frame_inputLayout.createSequentialGroup()
                         .addComponent(jLabel8)
                         .addGap(8, 8, 8)))
@@ -318,14 +316,10 @@ public class QuanLyTourP extends javax.swing.JInternalFrame {
                 .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtTenTour, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
                     .addComponent(txtMaTour))
-                .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(frame_inputLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel11)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, frame_inputLayout.createSequentialGroup()
-                        .addGap(50, 50, 50)
-                        .addComponent(jLabel10)))
+                .addGap(47, 47, 47)
+                .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel11))
                 .addGap(18, 18, 18)
                 .addGroup(frame_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(txtNgayBD, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
@@ -560,12 +554,14 @@ public class QuanLyTourP extends javax.swing.JInternalFrame {
         loadData();
         clearInputFields();
         btnAdd.setEnabled(true);
+        txtMaTour.enable(true);
     }//GEN-LAST:event_btnDelActionPerformed
 
     private void RefreshTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshTourActionPerformed
         loadData();
         clearInputFields();
         btnAdd.setEnabled(true);
+        txtMaTour.enable(true);
     }//GEN-LAST:event_RefreshTourActionPerformed
 
 

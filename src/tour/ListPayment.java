@@ -36,13 +36,13 @@ public class ListPayment extends javax.swing.JInternalFrame {
     model.setRowCount(0); 
     ArrayList<ThanhToan> thanhToanList = ThanhToan.selectAll();
 
-    for (ThanhToan thanhToan : thanhToanList) {
+for (ThanhToan thanhToan : thanhToanList) {
         model.addRow(new Object[]{
-            thanhToan.getMaThanhToan(),   
-            thanhToan.getMadatTour(),      
-            thanhToan.getNgayThanhToan(),
-            thanhToan.getHinhThuc(),     
-            thanhToan.getTongTien()     
+            thanhToan.getMaThanhToan() != null ? thanhToan.getMaThanhToan() : "",
+            thanhToan.getMadatTour() != null ? thanhToan.getMadatTour() : "", 
+            thanhToan.getNgayThanhToan() != null ? thanhToan.getNgayThanhToan() : "", 
+            thanhToan.getHinhThuc() != null ? thanhToan.getHinhThuc() : "", 
+            thanhToan.getTongTien() 
         });
     }
 }

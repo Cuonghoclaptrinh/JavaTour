@@ -42,7 +42,7 @@ public class ListBooked extends javax.swing.JInternalFrame {
 
                     if ("Chưa Thanh Toán".equals(trangThaiThanhToan)) {
                         String maDatTour = TableListBooked.getValueAt(selectedRow, 0).toString();
-                        String tenTour = TableListBooked.getValueAt(selectedRow, 1).toString();
+                        String tenTour = (TableListBooked.getValueAt(selectedRow, 1) != null) ? TableListBooked.getValueAt(selectedRow, 1).toString() : "";
                         String tenKh = TableListBooked.getValueAt(selectedRow, 2).toString();
                         LocalDate ngayDat = LocalDate.parse(TableListBooked.getValueAt(selectedRow, 3).toString());
                         int soLuong = Integer.parseInt(TableListBooked.getValueAt(selectedRow, 4).toString());
@@ -100,16 +100,26 @@ public class ListBooked extends javax.swing.JInternalFrame {
         ArrayList<DatTour> datTourList = DatTour.selectAll();
 
         for (DatTour datTour : datTourList) {
-            model.addRow(new Object[]{
-                datTour.getMaDatTour(),
-                datTour.getMaTour(),
-                datTour.getMaKhachHang(),
-                datTour.getNgayDat(),
-                datTour.getSoLuongNguoi(),
-                datTour.getTongTien(),
-                datTour.getTrangThai()
-            });
-        }
+        // Kiểm tra các trường có thể null trước khi thêm vào
+        Object maDatTour = (datTour.getMaDatTour() != null) ? datTour.getMaDatTour() : "";
+        Object maTour = (datTour.getMaTour() != null) ? datTour.getMaTour() : "";
+        Object maKhachHang = (datTour.getMaKhachHang() != null) ? datTour.getMaKhachHang() : "";
+        Object ngayDat = (datTour.getNgayDat() != null) ? datTour.getNgayDat() : "";
+        Object soLuongNguoi =datTour.getSoLuongNguoi();
+        Object tongTien =datTour.getTongTien() ;
+        Object trangThai = (datTour.getTrangThai() != null) ? datTour.getTrangThai() : "";
+
+        // Thêm dòng mới vào bảng
+        model.addRow(new Object[]{
+            maDatTour,
+            maTour,
+            maKhachHang,
+            ngayDat,
+            soLuongNguoi,
+            tongTien,
+            trangThai
+        });
+    }
     }
 
     /**

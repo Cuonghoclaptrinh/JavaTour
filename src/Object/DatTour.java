@@ -32,7 +32,7 @@ public class DatTour {
 // Constructor using dataRow (Array of Objects)
  public DatTour(Object[] dataRow) {
         maDatTour = dataRow[0].toString();
-        matour = dataRow[1].toString();
+        matour = (dataRow[1] != null) ? dataRow[1].toString() : null;
         makhachHang = dataRow[2].toString();
         if (dataRow[3] instanceof java.sql.Date) {
         java.sql.Date sqlDate = (java.sql.Date) dataRow[3];
